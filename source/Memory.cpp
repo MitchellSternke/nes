@@ -32,7 +32,27 @@ Memory::Memory( NES& nes ) :
 
 uint8_t Memory::readByte( uint16_t address )
 {
-	///@todo implement
+	// RAM and Mirrors
+	if( address < 0x2000 )
+	{
+		return ram[address & 0x7ff];
+	}
+	// PPU Registers and Mirrors
+	else if( address < 0x4000 )
+	{
+		///@todo implement
+	}
+	// APU and I/O registers
+	else if( address < 0x4020 )
+	{
+		///@todo implement
+	}
+	// Cartridge space
+	else
+	{
+		///@todo implement
+	}
+
 	return 0;
 }
 

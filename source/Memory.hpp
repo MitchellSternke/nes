@@ -19,6 +19,8 @@ public:
 
 private:
 	NES& nes;
+
+	uint8_t ram[0x800]; /**< Internal RAM (2kb). */
 };
 
 /**

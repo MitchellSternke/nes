@@ -16,6 +16,11 @@ struct ROMHeader
 	uint8_t unused[8];
 
 	/**
+	 * Get the mapper number used by the ROM.
+	 */
+	uint8_t getMapper() const;
+
+	/**
 	 * Print the header in human-readable form.
 	 */
 	void print() const;

@@ -2,6 +2,15 @@
 
 #include "ROMImage.hpp"
 
+//*********************************************************************
+// ROMHeader struct
+//*********************************************************************
+
+uint8_t ROMHeader::getMapper() const
+{
+	return ((flags6 & 0xf0) >> 4) | (flags7 & 0xf0);
+}
+
 void ROMHeader::print() const
 {
 	std::cout << "************************************************************************\n";
@@ -9,8 +18,13 @@ void ROMHeader::print() const
 	std::cout << "Bytes 0-3:\t\t" << header << "\n";
 	std::cout << "Program ROM Pages:\t" << (uint16_t)prgPages << "\n";
 	std::cout << "Program CHR Pages:\t" << (uint16_t)chrPages << "\n";
+	std::cout << "Mapper Number:\t\t" << (uint16_t)getMapper() << "\n";
 	std::cout << "************************************************************************\n";
 }
+
+//*********************************************************************
+// ROMImage class
+//*********************************************************************
 
 ROMImage::ROMImage( uint8_t* data )
 {
