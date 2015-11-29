@@ -45,6 +45,8 @@
 		<Unit filename="source/Memory.hpp" />
 		<Unit filename="source/NES.cpp" />
 		<Unit filename="source/NES.hpp" />
+		<Unit filename="source/ROMImage.cpp" />
+		<Unit filename="source/ROMImage.hpp" />
 		<Unit filename="source/Types.hpp" />
 		<Extensions>
 			<code_completion />

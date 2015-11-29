@@ -1,9 +1,11 @@
 #include "NES.hpp"
 
-NES::NES() :
+NES::NES( uint8_t* romData ) :
 	cpu(*this),
-	memory(*this)
+	memory(*this),
+	romImage(romData)
 {
+	romImage.getHeader()->print();
 }
 
 Memory& NES::getMemory()

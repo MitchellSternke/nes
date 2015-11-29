@@ -3,10 +3,13 @@
  * Contains the program entry point.
  */
 
+#include <cstdio>
 #include <iostream>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+
+#include "NES.hpp"
 
 #define WINDOW_RESOLUTION_X (256 * 3)
 #define WINDOW_RESOLUTION_Y (240 * 3)
@@ -67,6 +70,12 @@ static int initialize()
  */
 int main( int argc, char** argv )
 {
+	if( argc != 2 )
+	{
+		std::cout << "Please specify a ROM file to load as the second argument.\n";
+		return -1;
+	}
+
 	// Wrap everything in a try-catch
 	try
 	{
@@ -78,7 +87,28 @@ int main( int argc, char** argv )
 		}
 		else
 		{
-			// TODO: run the emulator
+			// Load the ROM
+			std::cout << "Loading ROM \"" << argv[1] << "\"\n";
+			FILE* file = fopen(argv[1], "r");
+			if( file == NULL )
+			{
+				std::cout << "Failed to open ROM file\n";
+				cleanup();
+				return -1;
+			}
+
+			fseek(file, 0L, SEEK_END);
+			size_t fileSize = ftell(file);
+			fseek(file, 0L, SEEK_SET);
+
+			uint8_t* romData = new uint8_t[fileSize];
+			fread(romData, sizeof(uint8_t), fileSize, file);
+			fclose(file);
+
+			// Run the emulator
+			NES nes(romData);
+
+			delete [] romData;
 		}
 	}
 	catch( std::exception& e )
