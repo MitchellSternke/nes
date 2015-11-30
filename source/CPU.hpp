@@ -151,6 +151,12 @@ private:
 	void opADC();
 
 	/**
+	 * AND opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opAND();
+
+	/**
 	 * BCS opcode.
 	 */
 	void opBCS();
@@ -236,6 +242,12 @@ private:
 	 */
 	template <MemoryAddressingMode M>
 	void opLDY();
+
+	/**
+	 * ORA opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opORA();
 
 	/**
 	 * RTS opcode.

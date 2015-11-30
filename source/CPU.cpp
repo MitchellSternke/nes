@@ -95,6 +95,16 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
 
+	// AND
+	opcodes[0x29] = &CPU::opAND<MEM_IMMEDIATE>;
+	opcodes[0x25] = &CPU::opAND<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x35] = &CPU::opAND<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x2d] = &CPU::opAND<MEM_ABSOLUTE>;
+	opcodes[0x3d] = &CPU::opAND<MEM_INDEXED_X>;
+	opcodes[0x39] = &CPU::opAND<MEM_INDEXED_Y>;
+	opcodes[0x21] = &CPU::opAND<MEM_PRE_INDEXED_INDIRECT>;
+	opcodes[0x31] = &CPU::opAND<MEM_POST_INDEXED_INDIRECT>;
+
 	// BCS
 	opcodes[0xb0] = &CPU::opBCS;
 
@@ -169,6 +179,16 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xb4] = &CPU::opLDY<MEM_ZERO_PAGE_INDEXED_X>;
 	opcodes[0xac] = &CPU::opLDY<MEM_ABSOLUTE>;
 	opcodes[0xbc] = &CPU::opLDY<MEM_INDEXED_X>;
+
+	// ORA
+	opcodes[0x09] = &CPU::opORA<MEM_IMMEDIATE>;
+	opcodes[0x05] = &CPU::opORA<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x15] = &CPU::opORA<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x0d] = &CPU::opORA<MEM_ABSOLUTE>;
+	opcodes[0x1d] = &CPU::opORA<MEM_INDEXED_X>;
+	opcodes[0x19] = &CPU::opORA<MEM_INDEXED_Y>;
+	opcodes[0x01] = &CPU::opORA<MEM_PRE_INDEXED_INDIRECT>;
+	opcodes[0x11] = &CPU::opORA<MEM_POST_INDEXED_INDIRECT>;
 
 	// RTS
 	opcodes[0x60] = &CPU::opRTS;
@@ -341,6 +361,15 @@ void CPU::opADC()
 	registers.a = (uint8_t)temp;
 }
 
+template <MemoryAddressingMode M>
+void CPU::opAND()
+{
+	MemoryAccess src = getMemory<M>();
+	registers.a &= src;
+	setSign(registers.a);
+	setZero(registers.a);
+}
+
 void CPU::opBCS()
 {
 	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
@@ -475,6 +504,15 @@ void CPU::opLDY()
 	setSign(src);
 	setZero(src);
 	registers.y = src;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opORA()
+{
+	MemoryAccess src = getMemory<M>();
+	registers.a |= src;
+	setSign(registers.a);
+	setZero(registers.a);
 }
 
 void CPU::opRTS()
