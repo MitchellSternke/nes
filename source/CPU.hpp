@@ -156,6 +156,12 @@ private:
 	void opBCS();
 
 	/**
+	 * BIT opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opBIT();
+
+	/**
 	 * BNE opcode.
 	 */
 	void opBNE();
@@ -220,6 +226,11 @@ private:
 	 */
 	template <MemoryAddressingMode M>
 	void opLDY();
+
+	/**
+	 * RTS opcode.
+	 */
+	void opRTS();
 
 	/**
 	 * SEI opcode.

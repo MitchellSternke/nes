@@ -98,6 +98,10 @@ CPU::CPU( NES& nes ) :
 	// BCS
 	opcodes[0xb0] = &CPU::opBCS;
 
+	// BIT
+	opcodes[0x24] = &CPU::opBIT<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x2c] = &CPU::opBIT<MEM_ABSOLUTE>;
+
 	// BNE
 	opcodes[0xd0] = &CPU::opBNE;
 
@@ -159,6 +163,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xb4] = &CPU::opLDY<MEM_ZERO_PAGE_INDEXED_X>;
 	opcodes[0xac] = &CPU::opLDY<MEM_ABSOLUTE>;
 	opcodes[0xbc] = &CPU::opLDY<MEM_INDEXED_X>;
+
+	// RTS
+	opcodes[0x60] = &CPU::opRTS;
 
 	// SEI
 	opcodes[0x78] = &CPU::opSEI;
@@ -337,6 +344,15 @@ void CPU::opBCS()
 	}
 }
 
+template <MemoryAddressingMode M>
+void CPU::opBIT()
+{
+	MemoryAccess src = getMemory<M>();
+	setSign(src);
+	registers.p.overflow = (0x40 & src);
+	setZero(src & registers.a);
+}
+
 void CPU::opBNE()
 {
 	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
@@ -439,6 +455,13 @@ void CPU::opLDY()
 	setSign(src);
 	setZero(src);
 	registers.y = src;
+}
+
+void CPU::opRTS()
+{
+	uint16_t address = pull();
+	address |= ((uint16_t)pull() << 8);
+	registers.pc.w = address + 1;
 }
 
 void CPU::opSEI()
