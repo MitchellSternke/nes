@@ -153,6 +153,11 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x81] = &CPU::opSTA<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x91] = &CPU::opSTA<MEM_POST_INDEXED_INDIRECT>;
 
+	// STX
+	opcodes[0x86] = &CPU::opSTX<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x96] = &CPU::opSTX<MEM_ZERO_PAGE_INDEXED_Y>;
+	opcodes[0x8e] = &CPU::opSTX<MEM_ABSOLUTE>;
+
 	// TXS
 	opcodes[0x9a] = &CPU::opTXS;
 }
@@ -384,6 +389,13 @@ void CPU::opSTA()
 {
 	MemoryAccess dest = getMemory<M>();
 	dest = registers.a;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opSTX()
+{
+	MemoryAccess dest = getMemory<M>();
+	dest = registers.x;
 }
 
 void CPU::opTXS()

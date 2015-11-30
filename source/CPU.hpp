@@ -206,6 +206,12 @@ private:
 	void opSTA();
 
 	/**
+	 * STX opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opSTX();
+
+	/**
 	 * TXS opcode.
 	 */
 	void opTXS();
