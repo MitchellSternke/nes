@@ -101,6 +101,16 @@ CPU::CPU( NES& nes ) :
 	// CLD
 	opcodes[0xd8] = &CPU::opCLD;
 
+	// CMP
+	opcodes[0xc9] = &CPU::opCMP<MEM_IMMEDIATE>;
+	opcodes[0xc5] = &CPU::opCMP<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0xd5] = &CPU::opCMP<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0xcd] = &CPU::opCMP<MEM_ABSOLUTE>;
+	opcodes[0xdd] = &CPU::opCMP<MEM_INDEXED_X>;
+	opcodes[0xd9] = &CPU::opCMP<MEM_INDEXED_Y>;
+	opcodes[0xc1] = &CPU::opCMP<MEM_PRE_INDEXED_INDIRECT>;
+	opcodes[0xd1] = &CPU::opCMP<MEM_POST_INDEXED_INDIRECT>;
+
 	// LDA
 	opcodes[0xa9] = &CPU::opLDA<MEM_IMMEDIATE>;
 	opcodes[0xa5] = &CPU::opLDA<MEM_ZERO_PAGE_ABSOLUTE>;
@@ -286,6 +296,16 @@ void CPU::opBPL()
 void CPU::opCLD()
 {
 	registers.p.decimal = 0;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opCMP()
+{
+	MemoryAccess src = getMemory<M>();
+	uint8_t value = registers.a - src;
+	registers.p.carry = ((value < 0x100) ? 1 : 0);
+	setSign(value);
+	setZero(value);
 }
 
 template <MemoryAddressingMode M>

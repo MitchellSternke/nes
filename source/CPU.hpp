@@ -150,6 +150,12 @@ private:
 	void opCLD();
 
 	/**
+	 * CMP opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opCMP();
+
+	/**
 	 * LDA opcode template.
 	 */
 	template <MemoryAddressingMode M>
