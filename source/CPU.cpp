@@ -70,39 +70,6 @@ CPU::RegisterAccess<R>::operator uint8_t()
 }
 
 //*********************************************************************
-// Opcode tempaltes
-//*********************************************************************
-
-template <MemoryAddressingMode M>
-void CPU::opADC()
-{
-	MemoryAccess src = getMemory<M>();
-	uint16_t temp = src + registers.a + (registers.p.carry ? 1 : 0);
-	setZero(temp & 0xff);
-	if( registers.p.decimal )
-	{
-		if( ((registers.a & 0xf) + (src & 0xf) + (registers.p.carry ? 1 : 0)) > 9 )
-		{
-			temp += 6;
-		}
-		setSign(temp);
-		registers.p.overflow = (!((registers.a ^ src) & 0x80) && ((registers.a ^ temp) & 0x80));
-		if( temp > 0x99 )
-		{
-			temp += 96;
-		}
-		registers.p.carry = (temp > 0x99);
-	}
-	else
-	{
-		setSign(temp);
-		registers.p.overflow = (!((registers.a ^ src) & 0x80) && ((registers.a ^ temp) & 0x80));
-		registers.p.carry = (temp > 0xff);
-	}
-	registers.a = (uint8_t)temp;
-}
-
-//*********************************************************************
 // The CPU class
 //*********************************************************************
 
@@ -127,6 +94,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x79] = &CPU::opADC<MEM_INDEXED_Y>;
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
+
+	// SEI
+	opcodes[0x78] = &CPU::opSEI;
 }
 
 void CPU::executeNextInstruction()
@@ -227,4 +197,42 @@ void CPU::setSign( uint8_t value )
 void CPU::setZero( uint8_t value )
 {
 	registers.p.zero = ((value == 0) ? 1 : 0);
+}
+
+//*********************************************************************
+// Opcode templates and methods
+//*********************************************************************
+
+template <MemoryAddressingMode M>
+void CPU::opADC()
+{
+	MemoryAccess src = getMemory<M>();
+	uint16_t temp = src + registers.a + (registers.p.carry ? 1 : 0);
+	setZero(temp & 0xff);
+	if( registers.p.decimal )
+	{
+		if( ((registers.a & 0xf) + (src & 0xf) + (registers.p.carry ? 1 : 0)) > 9 )
+		{
+			temp += 6;
+		}
+		setSign(temp);
+		registers.p.overflow = (!((registers.a ^ src) & 0x80) && ((registers.a ^ temp) & 0x80));
+		if( temp > 0x99 )
+		{
+			temp += 96;
+		}
+		registers.p.carry = (temp > 0x99);
+	}
+	else
+	{
+		setSign(temp);
+		registers.p.overflow = (!((registers.a ^ src) & 0x80) && ((registers.a ^ temp) & 0x80));
+		registers.p.carry = (temp > 0xff);
+	}
+	registers.a = (uint8_t)temp;
+}
+
+void CPU::opSEI()
+{
+	registers.p.interrupt = 1;
 }

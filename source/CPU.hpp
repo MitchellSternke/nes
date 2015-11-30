@@ -130,7 +130,7 @@ private:
 	void setZero( uint8_t value );
 
 	//*****************************************************************
-	// Opcode templates
+	// Opcode templates and methods
 	//*****************************************************************
 
 	/**
@@ -138,6 +138,11 @@ private:
 	 */
 	template <MemoryAddressingMode M>
 	void opADC();
+
+	/**
+	 * SEI opcode.
+	 */
+	void opSEI();
 };
 
 #endif // CPU_HPP
