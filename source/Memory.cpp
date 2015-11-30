@@ -61,7 +61,7 @@ uint8_t Memory::readByte( uint16_t address )
 	// PPU Registers and Mirrors
 	else if( address < 0x4000 )
 	{
-		///@todo implement
+		return nes.getPPU().readByte(0x2000 + (address & 0x7));
 	}
 	// APU and I/O registers
 	else if( address < 0x4020 )
@@ -92,7 +92,7 @@ void Memory::writeByte( uint16_t address, uint8_t value )
 	// PPU Registers and Mirrors
 	else if( address < 0x4000 )
 	{
-		///@todo implement
+		nes.getPPU().writeByte(0x2000 + (address & 0x7), value);
 	}
 	// APU and I/O registers
 	else if( address < 0x4020 )

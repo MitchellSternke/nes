@@ -48,6 +48,8 @@
 		<Unit filename="source/NES.hpp" />
 		<Unit filename="source/NROM.cpp" />
 		<Unit filename="source/NROM.hpp" />
+		<Unit filename="source/PPU.cpp" />
+		<Unit filename="source/PPU.hpp" />
 		<Unit filename="source/ROMImage.cpp" />
 		<Unit filename="source/ROMImage.hpp" />
 		<Unit filename="source/Types.hpp" />

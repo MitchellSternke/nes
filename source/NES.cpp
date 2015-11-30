@@ -4,7 +4,8 @@
 NES::NES( uint8_t* romData ) :
 	romImage(romData),
 	memory(*this),
-	cpu(*this)
+	cpu(*this),
+	ppu(*this)
 {
 	romImage.getHeader()->print();
 	memory.getMapper().print();
@@ -13,6 +14,11 @@ NES::NES( uint8_t* romData ) :
 Memory& NES::getMemory()
 {
 	return memory;
+}
+
+PPU& NES::getPPU()
+{
+	return ppu;
 }
 
 ROMImage& NES::getROMImage()
