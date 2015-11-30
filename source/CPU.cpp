@@ -95,6 +95,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
 
+	// BPL
+	opcodes[0x10] = &CPU::opBPL;
+
 	// CLD
 	opcodes[0xd8] = &CPU::opCLD;
 
@@ -262,6 +265,15 @@ void CPU::opADC()
 		registers.p.carry = (temp > 0xff);
 	}
 	registers.a = (uint8_t)temp;
+}
+
+void CPU::opBPL()
+{
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8();
+	if( !registers.p.sign )
+	{
+		registers.pc.w = address;
+	}
 }
 
 void CPU::opCLD()

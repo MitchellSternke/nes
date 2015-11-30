@@ -140,6 +140,11 @@ private:
 	void opADC();
 
 	/**
+	 * BPL opcode.
+	 */
+	void opBPL();
+
+	/**
 	 * CLD opcode.
 	 */
 	void opCLD();
