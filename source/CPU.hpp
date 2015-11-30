@@ -154,6 +154,12 @@ private:
 	 * SEI opcode.
 	 */
 	void opSEI();
+
+	/**
+	 * STA opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opSTA();
 };
 
 #endif // CPU_HPP

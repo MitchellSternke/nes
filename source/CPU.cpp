@@ -110,6 +110,15 @@ CPU::CPU( NES& nes ) :
 
 	// SEI
 	opcodes[0x78] = &CPU::opSEI;
+
+	// STA
+	opcodes[0x85] = &CPU::opSTA<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x95] = &CPU::opSTA<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x8d] = &CPU::opSTA<MEM_ABSOLUTE>;
+	opcodes[0x9d] = &CPU::opSTA<MEM_INDEXED_X>;
+	opcodes[0x99] = &CPU::opSTA<MEM_INDEXED_Y>;
+	opcodes[0x81] = &CPU::opSTA<MEM_PRE_INDEXED_INDIRECT>;
+	opcodes[0x91] = &CPU::opSTA<MEM_POST_INDEXED_INDIRECT>;
 }
 
 void CPU::executeNextInstruction()
@@ -262,4 +271,11 @@ void CPU::opLDA()
 void CPU::opSEI()
 {
 	registers.p.interrupt = 1;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opSTA()
+{
+	MemoryAccess dest = getMemory<M>();
+	dest = registers.a;
 }
