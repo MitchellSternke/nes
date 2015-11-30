@@ -40,3 +40,13 @@ const ROMHeader* ROMImage::getHeader() const
 {
 	return (ROMHeader*)(data);
 }
+
+const uint8_t* ROMImage::getPrgPage( int index ) const
+{
+	return (data + 16 + (16384 * index));
+}
+
+const uint8_t* ROMImage::getChrPage( int index ) const
+{
+	return (data + 16 + (16384 * getHeader()->prgPages) + (8192 * index));
+}

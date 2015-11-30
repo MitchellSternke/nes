@@ -39,6 +39,8 @@ public:
 
 	const uint8_t* getData() const;
 	const ROMHeader* getHeader() const;
+	const uint8_t* getPrgPage( int index ) const;
+	const uint8_t* getChrPage( int index ) const;
 
 private:
 	uint8_t* data;

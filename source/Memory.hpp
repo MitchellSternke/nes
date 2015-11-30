@@ -3,6 +3,7 @@
 
 #include "Types.hpp"
 
+class Mapper;
 class NES;
 
 /**
@@ -13,12 +14,14 @@ class Memory
 public:
 	Memory( NES& nes );
 
+	Mapper& getMapper();
 	uint8_t readByte( uint16_t address );
 	uint16_t readWord( uint16_t address );
 	void writeByte( uint16_t address, uint8_t value );
 
 private:
 	NES& nes;
+	Mapper* mapper;
 
 	uint8_t ram[0x800]; /**< Internal RAM (2kb). */
 };

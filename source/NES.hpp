@@ -14,11 +14,12 @@ public:
 	NES( uint8_t* romData );
 
 	Memory& getMemory();
+	ROMImage& getROMImage();
 
 private:
+	ROMImage romImage;
 	CPU cpu;
 	Memory memory;
-	ROMImage romImage;
 };
 
 #endif // NES_HPP
