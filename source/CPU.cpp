@@ -114,6 +114,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xc1] = &CPU::opCMP<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0xd1] = &CPU::opCMP<MEM_POST_INDEXED_INDIRECT>;
 
+	// JSR
+	opcodes[0x20] = &CPU::opJSR;
+
 	// LDA
 	opcodes[0xa9] = &CPU::opLDA<MEM_IMMEDIATE>;
 	opcodes[0xa5] = &CPU::opLDA<MEM_ZERO_PAGE_ABSOLUTE>;
@@ -246,6 +249,18 @@ void CPU::powerOn()
 	registers.pc.w = nes.getMemory().readWord(VECTOR_RESET);
 }
 
+uint8_t CPU::pull()
+{
+	registers.s++;
+	return nes.getMemory().readByte(0x100 | (uint16_t)registers.s);
+}
+
+void CPU::push( uint8_t value )
+{
+	nes.getMemory().writeByte(0x100 | (uint16_t)registers.s, value);
+	registers.s--;
+}
+
 void CPU::setSign( uint8_t value )
 {
 	registers.p.sign = ((value & BIT_7) ? 1 : 0);
@@ -320,6 +335,16 @@ void CPU::opCMP()
 	registers.p.carry = ((value < 0x100) ? 1 : 0);
 	setSign(value);
 	setZero(value);
+}
+
+void CPU::opJSR()
+{
+	uint16_t address = getImmediate16();
+
+	registers.pc.w--;
+	push(registers.pc.h);
+	push(registers.pc.l);
+	registers.pc.w = address;
 }
 
 template <MemoryAddressingMode M>

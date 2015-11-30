@@ -126,6 +126,17 @@ private:
 	RegisterAccess<R> getRegister();
 
 	void powerOn();
+
+	/**
+	 * Pull a value from the top of the stack.
+	 */
+	uint8_t pull();
+
+	/**
+	 * Push a value to the top of the stack.
+	 */
+	void push( uint8_t value );
+
 	void setSign( uint8_t value );
 	void setZero( uint8_t value );
 
@@ -159,6 +170,11 @@ private:
 	 */
 	template <MemoryAddressingMode M>
 	void opCMP();
+
+	/**
+	 * JSR opcode template.
+	 */
+	void opJSR();
 
 	/**
 	 * LDA opcode template.
