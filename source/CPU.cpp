@@ -126,6 +126,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x99] = &CPU::opSTA<MEM_INDEXED_Y>;
 	opcodes[0x81] = &CPU::opSTA<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x91] = &CPU::opSTA<MEM_POST_INDEXED_INDIRECT>;
+
+	// TXS
+	opcodes[0x9a] = &CPU::opTXS;
 }
 
 void CPU::executeNextInstruction()
@@ -294,4 +297,9 @@ void CPU::opSTA()
 {
 	MemoryAccess dest = getMemory<M>();
 	dest = registers.a;
+}
+
+void CPU::opTXS()
+{
+	registers.s = registers.x;
 }

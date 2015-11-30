@@ -166,6 +166,11 @@ private:
 	 */
 	template <MemoryAddressingMode M>
 	void opSTA();
+
+	/**
+	 * TXS opcode.
+	 */
+	void opTXS();
 };
 
 #endif // CPU_HPP
