@@ -184,6 +184,16 @@ private:
 	void opCPY();
 
 	/**
+	 * DEX opcode.
+	 */
+	void opDEX();
+
+	/**
+	 * DEY opcode.
+	 */
+	void opDEY();
+
+	/**
 	 * JSR opcode template.
 	 */
 	void opJSR();

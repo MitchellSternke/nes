@@ -124,6 +124,12 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xc4] = &CPU::opCPY<MEM_ZERO_PAGE_ABSOLUTE>;
 	opcodes[0xcc] = &CPU::opCPY<MEM_ABSOLUTE>;
 
+	// DEX
+	opcodes[0xca] = &CPU::opDEX;
+
+	// DEY
+	opcodes[0x88] = &CPU::opDEY;
+
 	// JSR
 	opcodes[0x20] = &CPU::opJSR;
 
@@ -370,6 +376,20 @@ void CPU::opCPY()
 	registers.p.carry = ((registers.y >= src) ? 1 : 0);
 	setSign(value);
 	setZero(value);
+}
+
+void CPU::opDEX()
+{
+	registers.x--;
+	setSign(registers.x);
+	setZero(registers.x);
+}
+
+void CPU::opDEY()
+{
+	registers.y--;
+	setSign(registers.y);
+	setZero(registers.y);
 }
 
 void CPU::opJSR()
