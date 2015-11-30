@@ -151,6 +151,12 @@ private:
 	void opLDA();
 
 	/**
+	 * LDX opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opLDX();
+
+	/**
 	 * SEI opcode.
 	 */
 	void opSEI();
