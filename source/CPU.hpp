@@ -205,6 +205,16 @@ private:
 	void opDEY();
 
 	/**
+	 * INX opcode.
+	 */
+	void opINX();
+
+	/**
+	 * INY opcode.
+	 */
+	void opINY();
+
+	/**
 	 * JSR opcode template.
 	 */
 	void opJSR();

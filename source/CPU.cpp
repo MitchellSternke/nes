@@ -137,6 +137,12 @@ CPU::CPU( NES& nes ) :
 	// DEY
 	opcodes[0x88] = &CPU::opDEY;
 
+	// INX
+	opcodes[0xe8] = &CPU::opINX;
+
+	// INY
+	opcodes[0xc8] = &CPU::opINY;
+
 	// JSR
 	opcodes[0x20] = &CPU::opJSR;
 
@@ -416,6 +422,20 @@ void CPU::opDEX()
 void CPU::opDEY()
 {
 	registers.y--;
+	setSign(registers.y);
+	setZero(registers.y);
+}
+
+void CPU::opINX()
+{
+	registers.x++;
+	setSign(registers.x);
+	setZero(registers.x);
+}
+
+void CPU::opINY()
+{
+	registers.y++;
 	setSign(registers.y);
 	setZero(registers.y);
 }
