@@ -95,6 +95,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
 
+	// BCS
+	opcodes[0xb0] = &CPU::opBCS;
+
 	// BPL
 	opcodes[0x10] = &CPU::opBPL;
 
@@ -160,6 +163,8 @@ void CPU::executeNextInstruction()
 		std::cout << boost::format("Error: unimplemented opcode: %02X") % (uint16_t)opcode << std::endl;
 		exit(-1);
 	}
+
+	std::cout << boost::format("%02X %02X %02X\n") % (uint16_t)opcode % (uint16_t)nes.getMemory().readByte(registers.pc.w + 1) % (uint16_t)nes.getMemory().readByte(registers.pc.w + 2);
 
 	// Execute the opcode
 	registers.pc.w++;
@@ -284,9 +289,18 @@ void CPU::opADC()
 	registers.a = (uint8_t)temp;
 }
 
+void CPU::opBCS()
+{
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
+	if( registers.p.carry )
+	{
+		registers.pc.w = address;
+	}
+}
+
 void CPU::opBPL()
 {
-	uint16_t address = registers.pc.w + (int8_t)getImmediate8();
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
 	if( !registers.p.sign )
 	{
 		registers.pc.w = address;
