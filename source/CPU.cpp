@@ -89,14 +89,17 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x69] = &CPU::opADC<MEM_IMMEDIATE>;
 	opcodes[0x65] = &CPU::opADC<MEM_ZERO_PAGE_ABSOLUTE>;
 	opcodes[0x75] = &CPU::opADC<MEM_ZERO_PAGE_INDEXED_X>;
-	opcodes[0x60] = &CPU::opADC<MEM_ABSOLUTE>;
-	opcodes[0x70] = &CPU::opADC<MEM_INDEXED_X>;
+	opcodes[0x6D] = &CPU::opADC<MEM_ABSOLUTE>;
+	opcodes[0x7D] = &CPU::opADC<MEM_INDEXED_X>;
 	opcodes[0x79] = &CPU::opADC<MEM_INDEXED_Y>;
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
 
 	// BCS
 	opcodes[0xb0] = &CPU::opBCS;
+
+	// BNE
+	opcodes[0xd0] = &CPU::opBNE;
 
 	// BPL
 	opcodes[0x10] = &CPU::opBPL;
@@ -329,6 +332,15 @@ void CPU::opBCS()
 {
 	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
 	if( registers.p.carry )
+	{
+		registers.pc.w = address;
+	}
+}
+
+void CPU::opBNE()
+{
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
+	if( !registers.p.zero )
 	{
 		registers.pc.w = address;
 	}

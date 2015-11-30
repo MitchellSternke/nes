@@ -156,6 +156,11 @@ private:
 	void opBCS();
 
 	/**
+	 * BNE opcode.
+	 */
+	void opBNE();
+
+	/**
 	 * BPL opcode.
 	 */
 	void opBPL();
