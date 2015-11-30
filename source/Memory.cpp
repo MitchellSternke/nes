@@ -41,6 +41,7 @@ Memory::Memory( NES& nes ) :
 		break;
 	default:
 		std::cout << "Error: unimplemented mapper number: " << (uint16_t)nes.getROMImage().getHeader()->getMapper() << std::endl;
+		exit(-1);
 		break;
 	}
 }
@@ -78,8 +79,7 @@ uint8_t Memory::readByte( uint16_t address )
 
 uint16_t Memory::readWord( uint16_t address )
 {
-	///@todo implement
-	return 0;
+	return (uint16_t)readByte(address) | ((uint16_t)readByte(address + 1) << 8);
 }
 
 void Memory::writeByte( uint16_t address, uint8_t value )

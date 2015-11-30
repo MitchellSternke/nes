@@ -35,13 +35,15 @@ uint8_t NROM::readByte( uint16_t address )
 		// mirror the lower 16k of ROM
 		if( nrom256 )
 		{
-			return (nes.getROMImage().getPrgPage(1))[address - 0x8000];
+			return (nes.getROMImage().getPrgPage(1))[address - 0xc000];
 		}
 		else
 		{
 			return (nes.getROMImage().getPrgPage(0))[address - 0xc000];
 		}
 	}
+
+	return 0;
 }
 
 void NROM::writeByte( uint16_t address, uint8_t value )

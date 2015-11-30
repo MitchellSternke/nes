@@ -107,6 +107,7 @@ int main( int argc, char** argv )
 
 			// Run the emulator
 			NES nes(romData);
+			nes.run();
 
 			delete [] romData;
 		}

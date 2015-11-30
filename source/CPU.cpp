@@ -1,7 +1,15 @@
+#include <cstdlib>
 #include <iostream>
+
+#include <boost/format.hpp>
 
 #include "CPU.hpp"
 #include "NES.hpp"
+
+// Addresses for interrupt vectors
+#define VECTOR_NMI   0xfffa
+#define VECTOR_RESET 0xfffc
+#define VECTOR_IRQ   0xfffe
 
 //*********************************************************************
 // The Register template
@@ -101,6 +109,9 @@ void CPU::opADC()
 CPU::CPU( NES& nes ) :
 	nes(nes)
 {
+	// Reset to the initial power on state
+	powerOn();
+
 	// Initialize the opcode table
 	for( int i = 0; i < 0x100; i++ )
 	{
@@ -116,6 +127,21 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x79] = &CPU::opADC<MEM_INDEXED_Y>;
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
+}
+
+void CPU::executeNextInstruction()
+{
+	// Fetch the opcode
+	uint8_t opcode = nes.getMemory().readByte(registers.pc.w);
+	if( opcodes[opcode] == nullptr )
+	{
+		std::cout << boost::format("Error: unimplemented opcode: %02X") % (uint16_t)opcode << std::endl;
+		exit(-1);
+	}
+
+	// Execute the opcode
+	registers.pc.w++;
+	((*this).*(opcodes[opcode]))();
 }
 
 uint8_t CPU::getImmediate8()
@@ -178,6 +204,19 @@ MemoryAccess CPU::getMemory()
 			return MemoryAccess(nes.getMemory(), address);
 		}
 	}
+}
+
+void CPU::powerOn()
+{
+	// Reset the CPU to power on state
+	registers.p.raw = 0x34;
+	registers.a = 0;
+	registers.x = 0;
+	registers.y = 0;
+	registers.s = 0xfd;
+
+	// Jump to the reset vector for the first instruction
+	registers.pc.w = nes.getMemory().readWord(VECTOR_RESET);
 }
 
 void CPU::setSign( uint8_t value )

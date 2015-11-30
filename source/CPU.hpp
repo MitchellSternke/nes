@@ -125,6 +125,7 @@ private:
 	template <Register R>
 	RegisterAccess<R> getRegister();
 
+	void powerOn();
 	void setSign( uint8_t value );
 	void setZero( uint8_t value );
 

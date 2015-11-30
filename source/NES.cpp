@@ -3,8 +3,8 @@
 
 NES::NES( uint8_t* romData ) :
 	romImage(romData),
-	cpu(*this),
-	memory(*this)
+	memory(*this),
+	cpu(*this)
 {
 	romImage.getHeader()->print();
 	memory.getMapper().print();
@@ -18,4 +18,12 @@ Memory& NES::getMemory()
 ROMImage& NES::getROMImage()
 {
 	return romImage;
+}
+
+void NES::run()
+{
+	while(true)
+	{
+		cpu.executeNextInstruction();
+	}
 }

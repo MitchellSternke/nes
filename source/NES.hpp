@@ -15,11 +15,12 @@ public:
 
 	Memory& getMemory();
 	ROMImage& getROMImage();
+	void run();
 
 private:
 	ROMImage romImage;
-	CPU cpu;
 	Memory memory;
+	CPU cpu;
 };
 
 #endif // NES_HPP
