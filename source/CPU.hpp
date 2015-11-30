@@ -20,8 +20,8 @@ enum MemoryAddressingMode
 	MEM_ZERO_PAGE_INDEXED_X,
 	MEM_ZERO_PAGE_INDEXED_Y,
 	MEM_INDIRECT,
-	MEM_PRE_INDEXED_INDIRECT,
-	MEM_POST_INDEXED_INDIRECT,
+	MEM_PRE_INDEXED_INDIRECT, // a.k.a (indirect, x)
+	MEM_POST_INDEXED_INDIRECT, // a.k.a. (indirect), y
 	MEM_RELATIVE
 };
 
@@ -143,6 +143,12 @@ private:
 	 * CLD opcode.
 	 */
 	void opCLD();
+
+	/**
+	 * LDA opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opLDA();
 
 	/**
 	 * SEI opcode.
