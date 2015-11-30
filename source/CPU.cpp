@@ -114,6 +114,16 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xc1] = &CPU::opCMP<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0xd1] = &CPU::opCMP<MEM_POST_INDEXED_INDIRECT>;
 
+	// CPX
+	opcodes[0xe0] = &CPU::opCPX<MEM_IMMEDIATE>;
+	opcodes[0xe4] = &CPU::opCPX<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0xec] = &CPU::opCPX<MEM_ABSOLUTE>;
+
+	// CPY
+	opcodes[0xc0] = &CPU::opCPY<MEM_IMMEDIATE>;
+	opcodes[0xc4] = &CPU::opCPY<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0xcc] = &CPU::opCPY<MEM_ABSOLUTE>;
+
 	// JSR
 	opcodes[0x20] = &CPU::opJSR;
 
@@ -337,7 +347,27 @@ void CPU::opCMP()
 {
 	MemoryAccess src = getMemory<M>();
 	uint8_t value = registers.a - src;
-	registers.p.carry = ((value < 0x100) ? 1 : 0);
+	registers.p.carry = ((registers.a >= src) ? 1 : 0);
+	setSign(value);
+	setZero(value);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opCPX()
+{
+	MemoryAccess src = getMemory<M>();
+	uint8_t value = registers.x - src;
+	registers.p.carry = ((registers.x >= src) ? 1 : 0);
+	setSign(value);
+	setZero(value);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opCPY()
+{
+	MemoryAccess src = getMemory<M>();
+	uint8_t value = registers.y - src;
+	registers.p.carry = ((registers.y >= src) ? 1 : 0);
 	setSign(value);
 	setZero(value);
 }

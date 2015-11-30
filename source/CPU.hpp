@@ -172,6 +172,18 @@ private:
 	void opCMP();
 
 	/**
+	 * CPX opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opCPX();
+
+	/**
+	 * CPY opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opCPY();
+
+	/**
 	 * JSR opcode template.
 	 */
 	void opJSR();
