@@ -95,6 +95,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x61] = &CPU::opADC<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x71] = &CPU::opADC<MEM_POST_INDEXED_INDIRECT>;
 
+	// CLD
+	opcodes[0xd8] = &CPU::opCLD;
+
 	// SEI
 	opcodes[0x78] = &CPU::opSEI;
 }
@@ -230,6 +233,11 @@ void CPU::opADC()
 		registers.p.carry = (temp > 0xff);
 	}
 	registers.a = (uint8_t)temp;
+}
+
+void CPU::opCLD()
+{
+	registers.p.decimal = 0;
 }
 
 void CPU::opSEI()

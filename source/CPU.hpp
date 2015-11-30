@@ -140,6 +140,11 @@ private:
 	void opADC();
 
 	/**
+	 * CLD opcode.
+	 */
+	void opCLD();
+
+	/**
 	 * SEI opcode.
 	 */
 	void opSEI();
