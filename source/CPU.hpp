@@ -201,6 +201,12 @@ private:
 	void opCPY();
 
 	/**
+	 * DEC opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opDEC();
+
+	/**
 	 * DEX opcode.
 	 */
 	void opDEX();
@@ -209,6 +215,12 @@ private:
 	 * DEY opcode.
 	 */
 	void opDEY();
+
+	/**
+	 * INC opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opINC();
 
 	/**
 	 * INX opcode.

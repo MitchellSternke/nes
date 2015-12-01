@@ -141,11 +141,23 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xc4] = &CPU::opCPY<MEM_ZERO_PAGE_ABSOLUTE>;
 	opcodes[0xcc] = &CPU::opCPY<MEM_ABSOLUTE>;
 
+	// DEC
+	opcodes[0xc6] = &CPU::opDEC<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0xd6] = &CPU::opDEC<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0xce] = &CPU::opDEC<MEM_ABSOLUTE>;
+	opcodes[0xde] = &CPU::opDEC<MEM_INDEXED_X>;
+
 	// DEX
 	opcodes[0xca] = &CPU::opDEX;
 
 	// DEY
 	opcodes[0x88] = &CPU::opDEY;
+
+	// INC
+	opcodes[0xe6] = &CPU::opINC<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0xf6] = &CPU::opINC<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0xee] = &CPU::opINC<MEM_ABSOLUTE>;
+	opcodes[0xfe] = &CPU::opINC<MEM_INDEXED_X>;
 
 	// INX
 	opcodes[0xe8] = &CPU::opINX;
@@ -460,6 +472,15 @@ void CPU::opCPY()
 	setZero(value);
 }
 
+template <MemoryAddressingMode M>
+void CPU::opDEC()
+{
+	MemoryAccess src = getMemory<M>();
+	src = src - 1;
+	setSign(src);
+	setZero(src);
+}
+
 void CPU::opDEX()
 {
 	registers.x--;
@@ -472,6 +493,15 @@ void CPU::opDEY()
 	registers.y--;
 	setSign(registers.y);
 	setZero(registers.y);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opINC()
+{
+	MemoryAccess src = getMemory<M>();
+	src = src + 1;
+	setSign(src);
+	setZero(src);
 }
 
 void CPU::opINX()
