@@ -153,6 +153,10 @@ CPU::CPU( NES& nes ) :
 	// INY
 	opcodes[0xc8] = &CPU::opINY;
 
+	// JMP
+	opcodes[0x4c] = &CPU::opJMP<MEM_ABSOLUTE>;
+	opcodes[0x6c] = &CPU::opJMP<MEM_INDIRECT>;
+
 	// JSR
 	opcodes[0x20] = &CPU::opJSR;
 
@@ -482,6 +486,13 @@ void CPU::opINY()
 	registers.y++;
 	setSign(registers.y);
 	setZero(registers.y);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opJMP()
+{
+	MemoryAccess dest = getMemory<M>();
+	registers.pc.w = dest.getAddress();
 }
 
 void CPU::opJSR()

@@ -14,6 +14,11 @@ MemoryAccess::MemoryAccess( Memory& memory, uint16_t address ) :
 {
 }
 
+uint16_t MemoryAccess::getAddress() const
+{
+	return address;
+}
+
 MemoryAccess& MemoryAccess::operator = ( uint8_t value )
 {
 	memory.writeByte(address, value);

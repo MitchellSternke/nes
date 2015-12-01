@@ -34,6 +34,8 @@ class MemoryAccess
 public:
 	MemoryAccess( Memory& memory, uint16_t address );
 
+	uint16_t getAddress() const;
+
 	MemoryAccess& operator = ( uint8_t value );
 	operator uint8_t();
 

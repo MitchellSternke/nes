@@ -221,7 +221,13 @@ private:
 	void opINY();
 
 	/**
-	 * JSR opcode template.
+	 * JMP opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opJMP();
+
+	/**
+	 * JSR opcode.
 	 */
 	void opJSR();
 
