@@ -210,8 +210,23 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x96] = &CPU::opSTX<MEM_ZERO_PAGE_INDEXED_Y>;
 	opcodes[0x8e] = &CPU::opSTX<MEM_ABSOLUTE>;
 
+	// TAX
+	opcodes[0xaa] = &CPU::opTAX;
+
+	// TAY
+	opcodes[0xa8] = &CPU::opTAY;
+
+	// TSX
+	opcodes[0xba] = &CPU::opTSX;
+
+	// TXA
+	opcodes[0x8a] = &CPU::opTXA;
+
 	// TXS
 	opcodes[0x9a] = &CPU::opTXS;
+
+	// TYA
+	opcodes[0x98] = &CPU::opTYA;
 }
 
 void CPU::executeNextInstruction()
@@ -541,7 +556,42 @@ void CPU::opSTX()
 	dest = registers.x;
 }
 
+void CPU::opTAX()
+{
+	registers.x = registers.a;
+	setSign(registers.x);
+	setZero(registers.x);
+}
+
+void CPU::opTAY()
+{
+	registers.y = registers.a;
+	setSign(registers.y);
+	setZero(registers.y);
+}
+
+void CPU::opTSX()
+{
+	registers.x = registers.s;
+	setSign(registers.x);
+	setZero(registers.x);
+}
+
+void CPU::opTXA()
+{
+	registers.a = registers.x;
+	setSign(registers.a);
+	setZero(registers.a);
+}
+
 void CPU::opTXS()
 {
 	registers.s = registers.x;
+}
+
+void CPU::opTYA()
+{
+	registers.a = registers.y;
+	setSign(registers.a);
+	setZero(registers.a);
 }

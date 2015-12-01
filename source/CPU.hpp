@@ -272,9 +272,34 @@ private:
 	void opSTX();
 
 	/**
+	 * TAX opcode.
+	 */
+	void opTAX();
+
+	/**
+	 * TAY opcode.
+	 */
+	void opTAY();
+
+	/**
+	 * TSX opcode.
+	 */
+	void opTSX();
+
+	/**
+	 * TXA opcode.
+	 */
+	void opTXA();
+
+	/**
 	 * TXS opcode.
 	 */
 	void opTXS();
+
+	/**
+	 * TYA opcode.
+	 */
+	void opTYA();
 };
 
 #endif // CPU_HPP
