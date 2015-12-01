@@ -47,9 +47,11 @@ public:
 	CPU( NES& nes );
 
 	/**
-	 * Execute the next instruction.
+	 * Step CPU emulation by one instruction.
+	 *
+	 * @return the number of cycles taken to execute the instruction.
 	 */
-	void executeNextInstruction();
+	int step();
 
 private:
 	//*****************************************************************

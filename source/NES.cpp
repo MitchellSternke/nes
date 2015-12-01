@@ -30,6 +30,6 @@ void NES::run()
 {
 	while(true)
 	{
-		cpu.executeNextInstruction();
+		int cpuCycles = cpu.step();
 	}
 }

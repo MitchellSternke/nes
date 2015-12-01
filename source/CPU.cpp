@@ -11,6 +11,26 @@
 #define VECTOR_RESET 0xfffc
 #define VECTOR_IRQ   0xfffe
 
+// Minimum number of CPU cycles needed to execute each Opcode
+static const uint8_t instructionCycles[] = {
+	7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
+	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+	6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
+	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+	6, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6,
+	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+	6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6,
+	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+	2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+	2, 6, 2, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5,
+	2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4,
+	2, 5, 2, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4,
+	2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+	2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6,
+	2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
+};
+
 // Instruction Names for each Opcode
 static const char* instructionNames[] = {
 	"BRK", "ORA", "KIL", "SLO", "NOP", "ORA", "ASL", "SLO",
@@ -281,23 +301,6 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x98] = &CPU::opTYA;
 }
 
-void CPU::executeNextInstruction()
-{
-	// Fetch the opcode
-	uint8_t opcode = nes.getMemory().readByte(registers.pc.w);
-	if( opcodes[opcode] == nullptr )
-	{
-		std::cout << boost::format("Error: unimplemented opcode: %02X") % (uint16_t)opcode << std::endl;
-		exit(-1);
-	}
-
-	std::cout << boost::format("%04X: %s %02X %02X\n") % registers.pc.w % instructionNames[opcode] % (uint16_t)nes.getMemory().readByte(registers.pc.w + 1) % (uint16_t)nes.getMemory().readByte(registers.pc.w + 2);
-
-	// Execute the opcode
-	registers.pc.w++;
-	((*this).*(opcodes[opcode]))();
-}
-
 uint8_t CPU::getImmediate8()
 {
 	uint8_t value = nes.getMemory().readByte(registers.pc.w);
@@ -393,6 +396,26 @@ void CPU::setSign( uint8_t value )
 void CPU::setZero( uint8_t value )
 {
 	registers.p.zero = ((value == 0) ? 1 : 0);
+}
+
+int CPU::step()
+{
+	// Fetch the opcode
+	uint8_t opcode = nes.getMemory().readByte(registers.pc.w);
+	if( opcodes[opcode] == nullptr )
+	{
+		std::cout << boost::format("Error: unimplemented opcode: %02X") % (uint16_t)opcode << std::endl;
+		exit(-1);
+	}
+
+	std::cout << boost::format("%04X: %s %02X %02X\n") % registers.pc.w % instructionNames[opcode] % (uint16_t)nes.getMemory().readByte(registers.pc.w + 1) % (uint16_t)nes.getMemory().readByte(registers.pc.w + 2);
+
+	// Execute the instruction
+	registers.pc.w++;
+	((*this).*(opcodes[opcode]))();
+
+	///@todo more accurate cycle counting
+	return instructionCycles[opcode];
 }
 
 //*********************************************************************
