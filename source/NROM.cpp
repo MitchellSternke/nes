@@ -25,7 +25,12 @@ void NROM::print() const
 
 uint8_t NROM::readByte( uint16_t address )
 {
-	if( address >= 0x8000 && address <= 0xbfff )
+	if( address < 0x2000 )
+	{
+		// CHR
+		return nes.getROMImage().getChrPage(0)[address];
+	}
+	else if( address >= 0x8000 && address <= 0xbfff )
 	{
 		return (nes.getROMImage().getPrgPage(0))[address - 0x8000];
 	}

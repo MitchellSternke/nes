@@ -14,6 +14,7 @@ class NES
 public:
 	NES( uint8_t* romData );
 
+	CPU& getCPU();
 	Memory& getMemory();
 	PPU& getPPU();
 	ROMImage& getROMImage();

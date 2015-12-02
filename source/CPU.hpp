@@ -47,6 +47,11 @@ public:
 	CPU( NES& nes );
 
 	/**
+	 * Request a Non-Maskable Interrupt (NMI) on the next instruction.
+	 */
+	void requestNMI();
+
+	/**
 	 * Step CPU emulation by one instruction.
 	 *
 	 * @return the number of cycles taken to execute the instruction.
@@ -62,6 +67,16 @@ private:
 	 * Type used for opcode handler functions.
 	 */
 	typedef void (CPU::*OpcodeHandler)(void);
+
+	/**
+	 * Interrupts handled by the CPU.
+	 */
+	enum Interrupt
+	{
+		INTERRUPT_NONE,
+
+		INTERRUPT_NMI
+	};
 
 	/**
 	 * Contains all registers needed for the CPU.
@@ -112,6 +127,7 @@ private:
 
 	NES& nes;
 	Registers registers;
+	Interrupt interrupt;
 	OpcodeHandler opcodes[0x100];
 
 	//*****************************************************************
@@ -268,6 +284,16 @@ private:
 	 */
 	template <MemoryAddressingMode M>
 	void opORA();
+
+	/**
+	 * PHP opcode.
+	 */
+	void opPHP();
+
+	/**
+	 * PLP opcode.
+	 */
+	void opPLP();
 
 	/**
 	 * RTS opcode.

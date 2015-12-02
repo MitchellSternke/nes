@@ -262,6 +262,12 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x01] = &CPU::opORA<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x11] = &CPU::opORA<MEM_POST_INDEXED_INDIRECT>;
 
+	// PHP
+	opcodes[0x08] = &CPU::opPHP;
+
+	// PLP
+	opcodes[0x28] = &CPU::opPLP;
+
 	// RTS
 	opcodes[0x60] = &CPU::opRTS;
 
@@ -372,6 +378,8 @@ void CPU::powerOn()
 	registers.y = 0;
 	registers.s = 0xfd;
 
+	interrupt = INTERRUPT_NONE;
+
 	// Jump to the reset vector for the first instruction
 	registers.pc.w = nes.getMemory().readWord(VECTOR_RESET);
 }
@@ -388,6 +396,11 @@ void CPU::push( uint8_t value )
 	registers.s--;
 }
 
+void CPU::requestNMI()
+{
+	interrupt = INTERRUPT_NMI;
+}
+
 void CPU::setSign( uint8_t value )
 {
 	registers.p.sign = ((value & BIT_7) ? 1 : 0);
@@ -400,6 +413,24 @@ void CPU::setZero( uint8_t value )
 
 int CPU::step()
 {
+	int cycles = 0;
+
+	// Check for Interrupts
+	switch( interrupt )
+	{
+	case INTERRUPT_NMI:
+		std::cout << "HANDLING NMI\n";
+		push(registers.pc.h);
+		push(registers.pc.l);
+		opPHP();
+		registers.pc.w = nes.getMemory().readWord(VECTOR_NMI);
+		registers.p.interrupt = 1;
+		cycles += 7;
+	default:
+		break;
+	}
+	interrupt = INTERRUPT_NONE;
+
 	// Fetch the opcode
 	uint8_t opcode = nes.getMemory().readByte(registers.pc.w);
 	if( opcodes[opcode] == nullptr )
@@ -415,7 +446,8 @@ int CPU::step()
 	((*this).*(opcodes[opcode]))();
 
 	///@todo more accurate cycle counting
-	return instructionCycles[opcode];
+	cycles += instructionCycles[opcode];
+	return cycles;
 }
 
 //*********************************************************************
@@ -628,6 +660,16 @@ void CPU::opORA()
 	registers.a |= src;
 	setSign(registers.a);
 	setZero(registers.a);
+}
+
+void CPU::opPHP()
+{
+	push(registers.p.raw | 0x10);
+}
+
+void CPU::opPLP()
+{
+	registers.p.raw = ((pull() & 0xef) | 0x20);
 }
 
 void CPU::opRTS()
