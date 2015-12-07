@@ -180,6 +180,9 @@ CPU::CPU( NES& nes ) :
 	// BPL
 	opcodes[0x10] = &CPU::opBPL;
 
+	// CLC
+	opcodes[0x18] = &CPU::opCLC;
+
 	// CLD
 	opcodes[0xd8] = &CPU::opCLD;
 
@@ -605,6 +608,11 @@ void CPU::opBPL()
 	{
 		registers.pc.w = address;
 	}
+}
+
+void CPU::opCLC()
+{
+	registers.p.carry = 0;
 }
 
 void CPU::opCLD()

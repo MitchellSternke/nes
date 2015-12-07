@@ -206,6 +206,11 @@ private:
 	void opBPL();
 
 	/**
+	 * CLC opcode.
+	 */
+	void opCLC();
+
+	/**
 	 * CLD opcode.
 	 */
 	void opCLD();

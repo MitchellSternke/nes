@@ -58,7 +58,7 @@ uint8_t PPU::readRegister( uint16_t address )
 		break;
 	// PPUSTATUS
 	case 0x2002:
-		return 0x80;
+		return (cycle % 2 == 0 ? 0xc0 : 0);
 		break;
 	// OAMADDR
 	case 0x2003:
