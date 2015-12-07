@@ -13,9 +13,12 @@ PPU::PPU(NES& nes) :
 	currentAddress.w = 0;
 	writeToggle = false;
 
+	///@todo what is the correct state for these at power-on?
 	frame = 0;
-	scanline = 240;
-	cycle = 340;
+	//scanline = 240;
+	//cycle = 340;
+	scanline = 261;
+	cycle = 0;
 }
 
 uint16_t PPU::getNametableIndex( uint16_t address )

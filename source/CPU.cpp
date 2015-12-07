@@ -490,7 +490,6 @@ int CPU::step()
 	switch( interrupt )
 	{
 	case INTERRUPT_NMI:
-		std::cout << "HANDLING NMI\n";
 		push(registers.pc.h);
 		push(registers.pc.l);
 		opPHP();
@@ -510,7 +509,7 @@ int CPU::step()
 		exit(-1);
 	}
 
-	std::cout << boost::format("%04X: %s %02X %02X\n") % registers.pc.w % instructionNames[opcode] % (uint16_t)nes.getMemory().readByte(registers.pc.w + 1) % (uint16_t)nes.getMemory().readByte(registers.pc.w + 2);
+	//std::cout << boost::format("%04X: %s %02X %02X\n") % registers.pc.w % instructionNames[opcode] % (uint16_t)nes.getMemory().readByte(registers.pc.w + 1) % (uint16_t)nes.getMemory().readByte(registers.pc.w + 2);
 
 	// Execute the instruction
 	registers.pc.w++;
