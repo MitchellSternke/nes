@@ -215,6 +215,16 @@ CPU::CPU( NES& nes ) :
 	// DEY
 	opcodes[0x88] = &CPU::opDEY;
 
+	// EOR
+	opcodes[0x49] = &CPU::opEOR<MEM_IMMEDIATE>;
+	opcodes[0x45] = &CPU::opEOR<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x55] = &CPU::opEOR<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x4d] = &CPU::opEOR<MEM_ABSOLUTE>;
+	opcodes[0x5d] = &CPU::opEOR<MEM_INDEXED_X>;
+	opcodes[0x59] = &CPU::opEOR<MEM_INDEXED_Y>;
+	opcodes[0x41] = &CPU::opEOR<MEM_PRE_INDEXED_INDIRECT>;
+	opcodes[0x51] = &CPU::opEOR<MEM_POST_INDEXED_INDIRECT>;
+
 	// INC
 	opcodes[0xe6] = &CPU::opINC<MEM_ZERO_PAGE_ABSOLUTE>;
 	opcodes[0xf6] = &CPU::opINC<MEM_ZERO_PAGE_INDEXED_X>;
@@ -653,6 +663,15 @@ void CPU::opDEY()
 	registers.y--;
 	setSign(registers.y);
 	setZero(registers.y);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opEOR()
+{
+	MemoryAccess src = getMemory<M>();
+	registers.a ^= src;
+	setSign(registers.a);
+	setZero(registers.a);
 }
 
 template <MemoryAddressingMode M>

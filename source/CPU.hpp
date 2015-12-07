@@ -245,6 +245,12 @@ private:
 	void opDEY();
 
 	/**
+	 * EOR opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opEOR();
+
+	/**
 	 * INC opcode template.
 	 */
 	template <MemoryAddressingMode M>
