@@ -161,6 +161,13 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x21] = &CPU::opAND<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x31] = &CPU::opAND<MEM_POST_INDEXED_INDIRECT>;
 
+	// ASL
+	opcodes[0x0a] = &CPU::opASLAccumulator;
+	opcodes[0x06] = &CPU::opASL<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x16] = &CPU::opASL<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x0e] = &CPU::opASL<MEM_ABSOLUTE>;
+	opcodes[0x1e] = &CPU::opASL<MEM_INDEXED_X>;
+
 	// BCC
 	opcodes[0x90] = &CPU::opBCC;
 
@@ -552,6 +559,24 @@ void CPU::opAND()
 {
 	MemoryAccess src = getMemory<M>();
 	registers.a &= src;
+	setSign(registers.a);
+	setZero(registers.a);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opASL()
+{
+	MemoryAccess src = getMemory<M>();
+	registers.p.carry = (src & BIT_7);
+	src = (src << 1) & 0xfe;
+	setSign(src);
+	setZero(src);
+}
+
+void CPU::opASLAccumulator()
+{
+	registers.p.carry = (registers.a & BIT_7);
+	registers.a = (registers.a << 1) & 0xfe;
 	setSign(registers.a);
 	setZero(registers.a);
 }

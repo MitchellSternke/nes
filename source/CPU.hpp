@@ -175,6 +175,17 @@ private:
 	void opAND();
 
 	/**
+	 * ASL opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opASL();
+
+	/**
+	 * ASL with the accumulator opcode.
+	 */
+	void opASLAccumulator();
+
+	/**
 	 * BCC opcode.
 	 */
 	void opBCC();
