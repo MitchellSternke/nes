@@ -354,6 +354,11 @@ private:
 	void opRTS();
 
 	/**
+	 * SEC opcode.
+	 */
+	void opSEC();
+
+	/**
 	 * SEI opcode.
 	 */
 	void opSEI();

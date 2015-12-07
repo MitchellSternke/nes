@@ -304,6 +304,9 @@ CPU::CPU( NES& nes ) :
 	// RTS
 	opcodes[0x60] = &CPU::opRTS;
 
+	// SEC
+	opcodes[0x38] = &CPU::opSEC;
+
 	// SEI
 	opcodes[0x78] = &CPU::opSEI;
 
@@ -819,6 +822,11 @@ void CPU::opRTS()
 	uint16_t address = pull();
 	address |= ((uint16_t)pull() << 8);
 	registers.pc.w = address + 1;
+}
+
+void CPU::opSEC()
+{
+	registers.p.carry = 1;
 }
 
 void CPU::opSEI()
