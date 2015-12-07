@@ -18,7 +18,11 @@ public:
 	Memory& getMemory();
 	PPU& getPPU();
 	ROMImage& getROMImage();
-	void run();
+
+	/**
+	 * Step a single frame of emulation.
+	 */
+	void stepFrame();
 
 private:
 	ROMImage romImage;

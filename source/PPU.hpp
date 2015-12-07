@@ -14,6 +14,11 @@ public:
 	PPU(NES& nes);
 
 	/**
+	 * Get the current frame number.
+	 */
+	int getFrame() const;
+
+	/**
 	 * Read a PPU register value.
 	 */
 	uint8_t readRegister( uint16_t address );

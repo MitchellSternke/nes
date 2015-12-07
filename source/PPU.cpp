@@ -21,6 +21,11 @@ PPU::PPU(NES& nes) :
 	cycle = 0;
 }
 
+int PPU::getFrame() const
+{
+	return frame;
+}
+
 uint16_t PPU::getNametableIndex( uint16_t address )
 {
 	address = (address - 0x2000) % 0x1000;

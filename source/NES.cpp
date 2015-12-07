@@ -31,9 +31,10 @@ ROMImage& NES::getROMImage()
 	return romImage;
 }
 
-void NES::run()
+void NES::stepFrame()
 {
-	while(true)
+	int startFrame = ppu.getFrame();
+	while( startFrame == ppu.getFrame() )
 	{
 		// Step the CPU
 		int cpuCycles = cpu.step();

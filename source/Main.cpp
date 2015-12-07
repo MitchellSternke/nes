@@ -14,13 +14,20 @@
 #define WINDOW_RESOLUTION_X (256 * 3)
 #define WINDOW_RESOLUTION_Y (240 * 3)
 
-static SDL_Window* window = NULL;
+static uint8_t*    romData = nullptr;
+static SDL_Window* window  = NULL;
 
 /**
  * Cleanup all resources used by libraries for program exit.
  */
 static void cleanup()
 {
+	if( romData != nullptr )
+	{
+		delete [] romData;
+		romData = nullptr;
+	}
+
 	SDL_Quit();
 }
 
@@ -66,6 +73,33 @@ static int initialize()
 }
 
 /**
+ * Main emulation loop.
+ */
+static void mainLoop()
+{
+	NES nes(romData);
+
+	bool running = true;
+	while( running )
+	{
+		// Check input events
+		SDL_Event event;
+		while( SDL_PollEvent(&event) )
+		{
+			switch( event.type )
+			{
+			case SDL_QUIT:
+				running = false;
+				break;
+			}
+		}
+
+		// Run a frame of emulation
+		nes.stepFrame();
+	}
+}
+
+/**
  * Program entry point.
  */
 int main( int argc, char** argv )
@@ -101,15 +135,12 @@ int main( int argc, char** argv )
 			size_t fileSize = ftell(file);
 			fseek(file, 0L, SEEK_SET);
 
-			uint8_t* romData = new uint8_t[fileSize];
+			romData = new uint8_t[fileSize];
 			fread(romData, sizeof(uint8_t), fileSize, file);
 			fclose(file);
 
 			// Run the emulator
-			NES nes(romData);
-			nes.run();
-
-			delete [] romData;
+			mainLoop();
 		}
 	}
 	catch( std::exception& e )
