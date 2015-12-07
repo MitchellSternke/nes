@@ -354,6 +354,12 @@ private:
 	void opRTS();
 
 	/**
+	 * SBC opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opSBC();
+
+	/**
 	 * SEC opcode.
 	 */
 	void opSEC();

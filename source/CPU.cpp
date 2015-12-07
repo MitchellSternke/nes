@@ -304,6 +304,16 @@ CPU::CPU( NES& nes ) :
 	// RTS
 	opcodes[0x60] = &CPU::opRTS;
 
+	// SBC
+	opcodes[0xe9] = &CPU::opSBC<MEM_IMMEDIATE>;
+	opcodes[0xe5] = &CPU::opSBC<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0xf5] = &CPU::opSBC<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0xed] = &CPU::opSBC<MEM_ABSOLUTE>;
+	opcodes[0xfd] = &CPU::opSBC<MEM_INDEXED_X>;
+	opcodes[0xf9] = &CPU::opSBC<MEM_INDEXED_Y>;
+	opcodes[0xe1] = &CPU::opSBC<MEM_PRE_INDEXED_INDIRECT>;
+	opcodes[0xf1] = &CPU::opSBC<MEM_POST_INDEXED_INDIRECT>;
+
 	// SEC
 	opcodes[0x38] = &CPU::opSEC;
 
@@ -822,6 +832,29 @@ void CPU::opRTS()
 	uint16_t address = pull();
 	address |= ((uint16_t)pull() << 8);
 	registers.pc.w = address + 1;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opSBC()
+{
+	MemoryAccess src = getMemory<M>();
+	uint16_t temp = registers.a - src - (registers.p.carry ? 0 : 1);
+	setSign(temp);
+	setZero(temp & 0xff);
+	registers.p.overflow = (((registers.a ^ temp) & 0x80) && ((registers.a ^ src) & 0x80));
+	if( registers.p.decimal )
+	{
+		if( ((registers.a & 0xf) - (registers.p.carry ? 0 : 1)) < (src & 0xf))
+		{
+			temp -= 6;
+		}
+		if( temp > 0x99 )
+		{
+			temp -= 0x60;
+		}
+	}
+	registers.p.carry = (temp < 0x100);
+	registers.a = (temp & 0xff);
 }
 
 void CPU::opSEC()
