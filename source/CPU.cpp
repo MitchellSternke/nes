@@ -294,6 +294,11 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x96] = &CPU::opSTX<MEM_ZERO_PAGE_INDEXED_Y>;
 	opcodes[0x8e] = &CPU::opSTX<MEM_ABSOLUTE>;
 
+	// STY
+	opcodes[0x84] = &CPU::opSTY<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x94] = &CPU::opSTY<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x8c] = &CPU::opSTY<MEM_ABSOLUTE>;
+
 	// TAX
 	opcodes[0xaa] = &CPU::opTAX;
 
@@ -720,6 +725,13 @@ void CPU::opSTX()
 {
 	MemoryAccess dest = getMemory<M>();
 	dest = registers.x;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opSTY()
+{
+	MemoryAccess dest = getMemory<M>();
+	dest = registers.y;
 }
 
 void CPU::opTAX()

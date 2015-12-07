@@ -328,6 +328,12 @@ private:
 	void opSTX();
 
 	/**
+	 * STY opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opSTY();
+
+	/**
 	 * TAX opcode.
 	 */
 	void opTAX();
