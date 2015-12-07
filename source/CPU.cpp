@@ -275,8 +275,14 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x01] = &CPU::opORA<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x11] = &CPU::opORA<MEM_POST_INDEXED_INDIRECT>;
 
+	// PHA
+	opcodes[0x48] = &CPU::opPHA;
+
 	// PHP
 	opcodes[0x08] = &CPU::opPHP;
+
+	// PLA
+	opcodes[0x68] = &CPU::opPLA;
 
 	// PLP
 	opcodes[0x28] = &CPU::opPLP;
@@ -716,9 +722,21 @@ void CPU::opORA()
 	setZero(registers.a);
 }
 
+void CPU::opPHA()
+{
+	push(registers.a);
+}
+
 void CPU::opPHP()
 {
 	push(registers.p.raw | 0x10);
+}
+
+void CPU::opPLA()
+{
+	registers.a = pull();
+	setSign(registers.a);
+	setZero(registers.a);
 }
 
 void CPU::opPLP()

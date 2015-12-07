@@ -307,9 +307,19 @@ private:
 	void opORA();
 
 	/**
+	 * PHA opcode.
+	 */
+	void opPHA();
+
+	/**
 	 * PHP opcode.
 	 */
 	void opPHP();
+
+	/**
+	 * PLA opcode.
+	 */
+	void opPLA();
 
 	/**
 	 * PLP opcode.
