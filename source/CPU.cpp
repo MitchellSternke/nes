@@ -287,6 +287,20 @@ CPU::CPU( NES& nes ) :
 	// PLP
 	opcodes[0x28] = &CPU::opPLP;
 
+	// ROL
+	opcodes[0x2a] = &CPU::opROLAccumulator;
+	opcodes[0x26] = &CPU::opROL<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x36] = &CPU::opROL<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x2e] = &CPU::opROL<MEM_ABSOLUTE>;
+	opcodes[0x3e] = &CPU::opROL<MEM_INDEXED_X>;
+
+	// ROR
+	opcodes[0x6a] = &CPU::opRORAccumulator;
+	opcodes[0x66] = &CPU::opROR<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x76] = &CPU::opROR<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x6e] = &CPU::opROR<MEM_ABSOLUTE>;
+	opcodes[0x7e] = &CPU::opROR<MEM_INDEXED_X>;
+
 	// RTS
 	opcodes[0x60] = &CPU::opRTS;
 
@@ -742,6 +756,62 @@ void CPU::opPLA()
 void CPU::opPLP()
 {
 	registers.p.raw = ((pull() & 0xef) | 0x20);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opROL()
+{
+	MemoryAccess src = getMemory<M>();
+	bool bit7 = src & BIT_7;
+	src = src << 1;
+	if( registers.p.carry )
+	{
+		src = src | BIT_0;
+	}
+	registers.p.carry = (bit7 ? 1 : 0);
+	setSign(src);
+	setZero(src);
+}
+
+void CPU::opROLAccumulator()
+{
+	bool bit7 = registers.a & BIT_7;
+	registers.a <<= 1;
+	if( registers.p.carry )
+	{
+		registers.a |= BIT_0;
+	}
+	registers.p.carry = (bit7 ? 1 : 0);
+	setSign(registers.a);
+	setZero(registers.a);
+}
+
+template <MemoryAddressingMode M>
+void CPU::opROR()
+{
+	MemoryAccess src = getMemory<M>();
+	bool bit0 = src & BIT_0;
+	src = src >> 1;
+	if( registers.p.carry )
+	{
+		src = src | BIT_7;
+	}
+	registers.p.carry = (bit0 ? 1 : 0);
+	setSign(src);
+	setZero(src);
+}
+
+void CPU::opRORAccumulator()
+{
+	bool bit0 = registers.a & BIT_0;
+	registers.a >>= 1;
+	if( registers.p.carry )
+	{
+		registers.a |= BIT_7;
+	}
+	registers.p.carry = (bit0 ? 1 : 0);
+	setSign(registers.a);
+	setZero(registers.a);
 }
 
 void CPU::opRTS()

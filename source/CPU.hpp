@@ -327,6 +327,28 @@ private:
 	void opPLP();
 
 	/**
+	 * ROL opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opROL();
+
+	/**
+	 * ROL with the accumulator opcode.
+	 */
+	void opROLAccumulator();
+
+	/**
+	 * ROR opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opROR();
+
+	/**
+	 * ROR with the accumulator opcode.
+	 */
+	void opRORAccumulator();
+
+	/**
 	 * RTS opcode.
 	 */
 	void opRTS();
