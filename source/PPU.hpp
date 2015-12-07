@@ -16,7 +16,7 @@ public:
 	/**
 	 * Read a PPU register value.
 	 */
-	uint8_t readByte( uint16_t address );
+	uint8_t readRegister( uint16_t address );
 
 	/**
 	 * Step the PPU emulation by one cycle.
@@ -26,11 +26,20 @@ public:
 	/**
 	 * Write to a PPU register.
 	 */
-	void writeByte( uint16_t address, uint8_t value );
+	void writeRegister( uint16_t address, uint8_t value );
 
 private:
 	/**
-	 * PPU Registers.
+	 * Mirror mode for the NameTable.
+	 */
+	enum NametableMirrorMode
+	{
+		MIRROR_HORIZONTAL = 0,
+		MIRROR_VERTICAL   = 1,
+	};
+
+	/**
+	 * PPU Registers that can be directly read/written to.
 	 */
 	struct Registers
 	{
@@ -72,13 +81,53 @@ private:
 		uint8_t OAMADDR;
 	};
 
+	//*****************************************************************
+	// Member variables
+	//*****************************************************************
+
 	NES& nes;
 	Registers registers;
+
+	// Memory
+	uint8_t nametable[2048]; /**< 2kb nametable data. */
+
+	// PPU Address control
+	Word currentAddress; /**< The current address that will be accessed on the next PPU read/write. */
+	bool writeToggle;    /**< Toggles whether the low or high bit of the current address will be set on the next write to PPUADDR. */
 
 	// Timing Counters
 	int frame;    /**< The current frame number. */
 	int scanline; /**< The scanline number of the current frame. */
 	int cycle;    /**< The cycle number of the current scanline. */
+
+	//*****************************************************************
+	// Private Methods
+	//*****************************************************************
+
+	/**
+	 * Convert a nametable address to an index of the nametable.
+	 */
+	uint16_t getNametableIndex( uint16_t address );
+
+	/**
+	 * Read a byte from the PPU address space.
+	 */
+	uint8_t readByte( uint16_t address );
+
+	/**
+	 * Write to PPUADDR register.
+	 */
+	void writeAddressRegister( uint8_t value );
+
+	/**
+	 * Write a byte to the PPU address space.
+	 */
+	void writeByte( uint16_t address, uint8_t value );
+
+	/**
+	 * Write to PPUDATA register.
+	 */
+	void writeDataRegister( uint8_t value );
 };
 
 #endif // PPU_HPP

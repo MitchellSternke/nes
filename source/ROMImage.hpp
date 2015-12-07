@@ -21,6 +21,11 @@ struct ROMHeader
 	uint8_t getMapper() const;
 
 	/**
+	 * Get the mirroring mode for the nametable specified by the game cart.
+	 */
+	uint8_t getMirroring() const;
+
+	/**
 	 * Print the header in human-readable form.
 	 */
 	void print() const;

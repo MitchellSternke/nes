@@ -11,14 +11,20 @@ uint8_t ROMHeader::getMapper() const
 	return ((flags6 & 0xf0) >> 4) | (flags7 & 0xf0);
 }
 
+uint8_t ROMHeader::getMirroring() const
+{
+	return ((flags6 & BIT_3) >> 2) | (flags6 & BIT_0);
+}
+
 void ROMHeader::print() const
 {
 	std::cout << "************************************************************************\n";
 	std::cout << "ROM HEADER INFORMATION\n";
 	std::cout << "Bytes 0-3:\t\t" << header << "\n";
-	std::cout << "Program ROM Pages:\t" << (uint16_t)prgPages << "\n";
-	std::cout << "Program CHR Pages:\t" << (uint16_t)chrPages << "\n";
-	std::cout << "Mapper Number:\t\t" << (uint16_t)getMapper() << "\n";
+	std::cout << "Program ROM Pages:\t" << (int)prgPages << "\n";
+	std::cout << "Program CHR Pages:\t" << (int)chrPages << "\n";
+	std::cout << "Mapper Number:\t\t" << (int)getMapper() << "\n";
+	std::cout << "Mirroring Mode:\t\t" << (int)getMirroring() << "\n";
 	std::cout << "************************************************************************\n";
 }
 
