@@ -68,7 +68,7 @@ static const char* instructionNames[] = {
 };
 
 //*********************************************************************
-// The Register template
+// The RegisterAccess template
 //*********************************************************************
 
 template <Register R>
@@ -257,6 +257,13 @@ CPU::CPU( NES& nes ) :
 	opcodes[0xb4] = &CPU::opLDY<MEM_ZERO_PAGE_INDEXED_X>;
 	opcodes[0xac] = &CPU::opLDY<MEM_ABSOLUTE>;
 	opcodes[0xbc] = &CPU::opLDY<MEM_INDEXED_X>;
+
+	// LSR
+	opcodes[0x4a] = &CPU::opLSRAccumulator;
+	opcodes[0x46] = &CPU::opLSR<MEM_ZERO_PAGE_ABSOLUTE>;
+	opcodes[0x56] = &CPU::opLSR<MEM_ZERO_PAGE_INDEXED_X>;
+	opcodes[0x4e] = &CPU::opLSR<MEM_ABSOLUTE>;
+	opcodes[0x5e] = &CPU::opLSR<MEM_INDEXED_X>;
 
 	// ORA
 	opcodes[0x09] = &CPU::opORA<MEM_IMMEDIATE>;
@@ -680,6 +687,24 @@ void CPU::opLDY()
 	setSign(src);
 	setZero(src);
 	registers.y = src;
+}
+
+template <MemoryAddressingMode M>
+void CPU::opLSR()
+{
+	MemoryAccess src = getMemory<M>();
+	registers.p.sign = 0;
+	registers.p.carry = (src & BIT_0);
+	src = (src >> 1) & 0x7f;
+	setZero(src);
+}
+
+void CPU::opLSRAccumulator()
+{
+	registers.p.sign = 0;
+	registers.p.carry = (registers.a & BIT_0);
+	registers.a = (registers.a >> 1) & 0x7f;
+	setZero(registers.a);
 }
 
 template <MemoryAddressingMode M>

@@ -290,6 +290,17 @@ private:
 	void opLDY();
 
 	/**
+	 * LSR opcode template.
+	 */
+	template <MemoryAddressingMode M>
+	void opLSR();
+
+	/**
+	 * LSR with the accumulator opcode.
+	 */
+	void opLSRAccumulator();
+
+	/**
 	 * ORA opcode template.
 	 */
 	template <MemoryAddressingMode M>
