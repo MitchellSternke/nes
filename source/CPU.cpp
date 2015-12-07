@@ -161,8 +161,14 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x21] = &CPU::opAND<MEM_PRE_INDEXED_INDIRECT>;
 	opcodes[0x31] = &CPU::opAND<MEM_POST_INDEXED_INDIRECT>;
 
+	// BCC
+	opcodes[0x90] = &CPU::opBCC;
+
 	// BCS
 	opcodes[0xb0] = &CPU::opBCS;
+
+	// BEQ
+	opcodes[0xf0] = &CPU::opBEQ;
 
 	// BIT
 	opcodes[0x24] = &CPU::opBIT<MEM_ZERO_PAGE_ABSOLUTE>;
@@ -492,10 +498,28 @@ void CPU::opAND()
 	setZero(registers.a);
 }
 
+void CPU::opBCC()
+{
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
+	if( !registers.p.carry )
+	{
+		registers.pc.w = address;
+	}
+}
+
 void CPU::opBCS()
 {
 	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
 	if( registers.p.carry )
+	{
+		registers.pc.w = address;
+	}
+}
+
+void CPU::opBEQ()
+{
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
+	if( registers.p.zero )
 	{
 		registers.pc.w = address;
 	}

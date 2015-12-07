@@ -175,9 +175,19 @@ private:
 	void opAND();
 
 	/**
+	 * BCC opcode.
+	 */
+	void opBCC();
+
+	/**
 	 * BCS opcode.
 	 */
 	void opBCS();
+
+	/**
+	 * BEQ opcode.
+	 */
+	void opBEQ();
 
 	/**
 	 * BIT opcode template.
