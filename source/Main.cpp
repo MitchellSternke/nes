@@ -73,6 +73,30 @@ static int initialize()
 }
 
 /**
+ * Load a ROM from a file.
+ */
+static bool loadROM( const std::string& filename )
+{
+	std::cout << "Loading ROM \"" << filename << "\"\n";
+
+	FILE* file = fopen(filename.c_str(), "r");
+	if( file == NULL )
+	{
+		return false;
+	}
+
+	fseek(file, 0L, SEEK_END);
+	size_t fileSize = ftell(file);
+	fseek(file, 0L, SEEK_SET);
+
+	romData = new uint8_t[fileSize];
+	fread(romData, sizeof(uint8_t), fileSize, file);
+	fclose(file);
+
+	return true;
+}
+
+/**
  * Main emulation loop.
  */
 static void mainLoop()
@@ -122,22 +146,12 @@ int main( int argc, char** argv )
 		else
 		{
 			// Load the ROM
-			std::cout << "Loading ROM \"" << argv[1] << "\"\n";
-			FILE* file = fopen(argv[1], "r");
-			if( file == NULL )
+			if( !loadROM(argv[1]) )
 			{
 				std::cout << "Failed to open ROM file\n";
 				cleanup();
 				return -1;
 			}
-
-			fseek(file, 0L, SEEK_END);
-			size_t fileSize = ftell(file);
-			fseek(file, 0L, SEEK_SET);
-
-			romData = new uint8_t[fileSize];
-			fread(romData, sizeof(uint8_t), fileSize, file);
-			fclose(file);
 
 			// Run the emulator
 			mainLoop();
