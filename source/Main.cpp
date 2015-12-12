@@ -9,6 +9,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
+#include "DebugWindow.hpp"
 #include "NES.hpp"
 
 #define WINDOW_RESOLUTION_X (256 * 3)
@@ -103,6 +104,8 @@ static void mainLoop()
 {
 	NES nes(romData);
 
+	DebugWindow patternTableWindow("Pattern Table", 256, 128, 2);
+
 	bool running = true;
 	while( running )
 	{
@@ -115,11 +118,28 @@ static void mainLoop()
 			case SDL_QUIT:
 				running = false;
 				break;
+			case SDL_WINDOWEVENT:
+				switch( event.window.event )
+				{
+				case SDL_WINDOWEVENT_CLOSE:
+					running = false;
+					break;
+				default:
+					break;
+				}
+				break;
+			default:
+				break;
 			}
 		}
 
 		// Run a frame of emulation
 		nes.stepFrame();
+
+		// Render
+		uint32_t* patternTable = nes.getPPU().getVisualPatternTable();
+		patternTableWindow.render(patternTable);
+		delete [] patternTable;
 	}
 }
 

@@ -40,6 +40,8 @@
 		</Linker>
 		<Unit filename="source/CPU.cpp" />
 		<Unit filename="source/CPU.hpp" />
+		<Unit filename="source/DebugWindow.cpp" />
+		<Unit filename="source/DebugWindow.hpp" />
 		<Unit filename="source/Main.cpp" />
 		<Unit filename="source/Mapper.hpp" />
 		<Unit filename="source/Memory.cpp" />

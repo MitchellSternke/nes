@@ -35,6 +35,54 @@ uint16_t PPU::getNametableIndex( uint16_t address )
 	return (0x2000 + nametableMirrorLookup[mode][table] * 0x400 + offset) % 2048;
 }
 
+uint32_t* PPU::getVisualPatternTable() const
+{
+	uint32_t* pixels = new uint32_t[128 * 128 * 2];
+
+	int x = 0;
+	int y = 0;
+	for( int index = 0; index < 0x2000; index += 16 )
+	{
+		for( int row = 0; row < 8; row++ )
+		{
+			uint8_t plane1 = nes.getMemory().getMapper().readByte(index + row);
+			uint8_t plane2 = nes.getMemory().getMapper().readByte(index + row + 8);
+
+			for( int column = 0; column < 8; column++ )
+			{
+				uint32_t pixel = 0xff000000 | ((((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0)) * 0x555555);
+
+				pixels[(y + row) * 256 + (x + (7 - column))] = pixel;
+			}
+		}
+
+		x += 8;
+		if( index < 0x1000 )
+		{
+			if( x >= 128 )
+			{
+				x = 0;
+				y += 8;
+				if( y >= 128 )
+				{
+					x = 128;
+					y = 0;
+				}
+			}
+		}
+		else
+		{
+			if( x >= 256 )
+			{
+				x = 128;
+				y += 8;
+			}
+		}
+	}
+
+	return pixels;
+}
+
 uint8_t PPU::readByte( uint16_t address )
 {
 	// Mirror all addresses above $3fff

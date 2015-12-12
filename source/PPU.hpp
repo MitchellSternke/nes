@@ -19,6 +19,11 @@ public:
 	int getFrame() const;
 
 	/**
+	 * Get an ARGB representation of the pattern table.
+	 */
+	uint32_t* getVisualPatternTable() const;
+
+	/**
 	 * Read a PPU register value.
 	 */
 	uint8_t readRegister( uint16_t address );
