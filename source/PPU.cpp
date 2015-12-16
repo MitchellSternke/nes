@@ -199,9 +199,9 @@ uint32_t* PPU::getVisualPalette()
 	for( int index = 0; index < 8; index++ )
 	{
 		pixels[index * 4]     = 0xff000000 | paletteRGB[palette[0]];
-		pixels[index * 4 + 1] = 0xff000000 | paletteRGB[palette[index * 3 + 1]];
-		pixels[index * 4 + 2] = 0xff000000 | paletteRGB[palette[index * 3 + 2]];
-		pixels[index * 4 + 3] = 0xff000000 | paletteRGB[palette[index * 3 + 3]];
+		pixels[index * 4 + 1] = 0xff000000 | paletteRGB[palette[index * 4 + 1]];
+		pixels[index * 4 + 2] = 0xff000000 | paletteRGB[palette[index * 4 + 2]];
+		pixels[index * 4 + 3] = 0xff000000 | paletteRGB[palette[index * 4 + 3]];
 	}
 
 	return pixels;
@@ -370,6 +370,12 @@ void PPU::writeByte( uint16_t address, uint8_t value )
 	{
 		// Palette data
 		palette[address - 0x3f00] = value;
+
+		// Mirroring
+		if( address == 0x3f10 || address == 0x3f14 || address == 0x3f18 || address == 0x3f1c )
+		{
+			palette[address - 0x3f10] = value;
+		}
 	}
 }
 
