@@ -300,6 +300,22 @@ uint8_t PPU::readByte( uint16_t address )
 	return 0;
 }
 
+uint8_t PPU::readDataRegister()
+{
+	uint8_t value = readByte(currentAddress.w);
+
+	if( !registers.PPUCTRL.increment )
+	{
+		currentAddress.w++;
+	}
+	else
+	{
+		currentAddress.w += 32;
+	}
+
+	return value;
+}
+
 uint8_t PPU::readRegister( uint16_t address )
 {
 	switch( address )
@@ -329,7 +345,7 @@ uint8_t PPU::readRegister( uint16_t address )
 		break;
 	// PPUDATA
 	case 0x2007:
-		break;
+		return readDataRegister();
 	default:
 		break;
 	}

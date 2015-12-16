@@ -142,6 +142,11 @@ private:
 	uint8_t readByte( uint16_t address );
 
 	/**
+	 * Read from the PPUDATA register.
+	 */
+	uint8_t readDataRegister();
+
+	/**
 	 * Write to PPUADDR register.
 	 */
 	void writeAddressRegister( uint8_t value );
