@@ -106,6 +106,7 @@ static void mainLoop()
 
 	DebugWindow patternTableWindow("Pattern Table", 256, 128, 2);
 	DebugWindow nametableWindow("Nametables", 512, 480, 2);
+	DebugWindow paletteWindow("Palette", 4, 8, 32);
 
 	bool running = true;
 	while( running )
@@ -145,6 +146,10 @@ static void mainLoop()
 		uint32_t* nametable = nes.getPPU().getVisualNametable();
 		nametableWindow.render(nametable);
 		delete [] nametable;
+
+		uint32_t* palette = nes.getPPU().getVisualPalette();
+		paletteWindow.render(palette);
+		delete [] palette;
 	}
 }
 

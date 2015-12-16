@@ -24,6 +24,11 @@ public:
 	uint32_t* getVisualNametable();
 
 	/**
+	 * Get an ARGB representation of the palette.
+	 */
+	uint32_t* getVisualPalette();
+
+	/**
 	 * Get an ARGB representation of the pattern table.
 	 */
 	uint32_t* getVisualPatternTable();
@@ -105,6 +110,7 @@ private:
 	Registers registers;
 
 	// Memory
+	uint8_t palette[32];     /**< 32 bytes of palette data. */
 	uint8_t nametable[2048]; /**< 2kb nametable data. */
 
 	// PPU Address control
