@@ -105,6 +105,7 @@ static void mainLoop()
 	NES nes(romData);
 
 	DebugWindow patternTableWindow("Pattern Table", 256, 128, 2);
+	DebugWindow nametableWindow("Nametables", 512, 480, 2);
 
 	bool running = true;
 	while( running )
@@ -140,6 +141,10 @@ static void mainLoop()
 		uint32_t* patternTable = nes.getPPU().getVisualPatternTable();
 		patternTableWindow.render(patternTable);
 		delete [] patternTable;
+
+		uint32_t* nametable = nes.getPPU().getVisualNametable();
+		nametableWindow.render(nametable);
+		delete [] nametable;
 	}
 }
 

@@ -19,9 +19,14 @@ public:
 	int getFrame() const;
 
 	/**
+	 * Get an ARGB representation of the nametable.
+	 */
+	uint32_t* getVisualNametable();
+
+	/**
 	 * Get an ARGB representation of the pattern table.
 	 */
-	uint32_t* getVisualPatternTable() const;
+	uint32_t* getVisualPatternTable();
 
 	/**
 	 * Read a PPU register value.
@@ -63,6 +68,7 @@ private:
 			Bit<4>  backgroundTable;
 			Bit<5>  spriteHeight;
 			Bit<6>  masterSlave;
+			Bit<7>  nmiEnable;
 		} PPUCTRL;
 
 		// $2001

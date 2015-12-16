@@ -181,6 +181,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x24] = &CPU::opBIT<MEM_ZERO_PAGE_ABSOLUTE>;
 	opcodes[0x2c] = &CPU::opBIT<MEM_ABSOLUTE>;
 
+	// BMI
+	opcodes[0x30] = &CPU::opBMI;
+
 	// BNE
 	opcodes[0xd0] = &CPU::opBNE;
 
@@ -320,6 +323,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x76] = &CPU::opROR<MEM_ZERO_PAGE_INDEXED_X>;
 	opcodes[0x6e] = &CPU::opROR<MEM_ABSOLUTE>;
 	opcodes[0x7e] = &CPU::opROR<MEM_INDEXED_X>;
+
+	// RTI
+	opcodes[0x40] = &CPU::opRTI;
 
 	// RTS
 	opcodes[0x60] = &CPU::opRTS;
@@ -616,6 +622,15 @@ void CPU::opBIT()
 	setZero(src & registers.a);
 }
 
+void CPU::opBMI()
+{
+	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
+	if( registers.p.sign )
+	{
+		registers.pc.w = address;
+	}
+}
+
 void CPU::opBNE()
 {
 	uint16_t address = registers.pc.w + (int8_t)getImmediate8() + 1;
@@ -876,6 +891,15 @@ void CPU::opRORAccumulator()
 	registers.p.carry = (bit0 ? 1 : 0);
 	setSign(registers.a);
 	setZero(registers.a);
+}
+
+void CPU::opRTI()
+{
+	registers.p.raw = (pull() & 0xef) | 0x20;
+
+	uint16_t address = pull();
+	address |= ((uint16_t)pull() << 8);
+	registers.pc.w = address;
 }
 
 void CPU::opRTS()

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Mapper.hpp"
 #include "NES.hpp"
 #include "PPU.hpp"
@@ -35,7 +37,92 @@ uint16_t PPU::getNametableIndex( uint16_t address )
 	return (0x2000 + nametableMirrorLookup[mode][table] * 0x400 + offset) % 2048;
 }
 
-uint32_t* PPU::getVisualPatternTable() const
+uint32_t* PPU::getVisualNametable()
+{
+	uint32_t* pixels = new uint32_t[256 * 2 * 240 * 2];
+
+	int x = 0;
+	int y = 0;
+	for( int index = 0x2000; index < 0x3000; index++ )
+	{
+		// Lookup the pattern table entry
+		uint16_t tile = readByte(index) + 256;
+
+		// Read the pixels of the tile
+		for( int row = 0; row < 8; row++ )
+		{
+			uint8_t plane1 = nes.getMemory().getMapper().readByte(tile * 16 + row);
+			uint8_t plane2 = nes.getMemory().getMapper().readByte(tile * 16 + row + 8);
+
+			for( int column = 0; column < 8; column++ )
+			{
+				uint32_t pixel = 0xff000000 | ((((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0)) * 0x555555);
+
+				pixels[(y + row) * 512 + (x + (7 - column))] = pixel;
+			}
+		}
+
+		x += 8;
+		if( index < 0x2400 )
+		{
+			if( x >= 256 )
+			{
+				x = 0;
+				y += 8;
+				if( y >= 240 )
+				{
+					x = 256;
+					y = 0;
+					index = 0x2400 - 1;
+				}
+			}
+		}
+		else if( index < 0x2800 )
+		{
+			if( x >= 512 )
+			{
+				x = 256;
+				y += 8;
+				if( y >= 240 )
+				{
+					x = 0;
+					y = 240;
+					index = 0x2800 - 1;
+				}
+			}
+		}
+		else if( index < 0x2c00 )
+		{
+			if( x >= 256 )
+			{
+				x = 0;
+				y += 8;
+				if( y >= 480 )
+				{
+					x = 256;
+					y = 240;
+					index = 0x2c00 - 1;
+				}
+			}
+		}
+		else
+		{
+			if( x >= 512 )
+			{
+				x = 256;
+				y += 8;
+				if( y >= 480 )
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	return pixels;
+}
+
+uint32_t* PPU::getVisualPatternTable()
 {
 	uint32_t* pixels = new uint32_t[128 * 128 * 2];
 
@@ -114,6 +201,7 @@ uint8_t PPU::readRegister( uint16_t address )
 		break;
 	// PPUSTATUS
 	case 0x2002:
+		writeToggle = false;
 		return (cycle % 2 == 0 ? 0xc0 : 0);
 		break;
 	// OAMADDR
@@ -156,7 +244,10 @@ void PPU::step()
 	// Check for vblank
 	if( scanline == 241 && cycle == 1 )
 	{
-		nes.getCPU().requestNMI();
+		if( registers.PPUCTRL.nmiEnable )
+		{
+			nes.getCPU().requestNMI();
+		}
 	}
 }
 
@@ -211,6 +302,7 @@ void PPU::writeRegister( uint16_t address, uint8_t value )
 	{
 	// PPUCTRL
 	case 0x2000:
+		registers.PPUCTRL.raw = value;
 		break;
 	// PPUMASK
 	case 0x2001:

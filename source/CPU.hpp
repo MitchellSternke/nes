@@ -207,6 +207,11 @@ private:
 	void opBIT();
 
 	/**
+	 * BMI opcode.
+	 */
+	void opBMI();
+
+	/**
 	 * BNE opcode.
 	 */
 	void opBNE();
@@ -369,6 +374,11 @@ private:
 	 * ROR with the accumulator opcode.
 	 */
 	void opRORAccumulator();
+
+	/**
+	 * RTI opcode.
+	 */
+	void opRTI();
 
 	/**
 	 * RTS opcode.
