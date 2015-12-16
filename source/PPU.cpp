@@ -98,13 +98,31 @@ int PPU::getFrame() const
 	return frame;
 }
 
+uint8_t PPU::getAttributeTableValue( uint16_t nametableAddress )
+{
+	nametableAddress = getNametableIndex(nametableAddress);
+
+	// Determine the 32x32 attribute table address
+	int row = ((nametableAddress & 0x3e0) >> 5) / 4;
+	int col = (nametableAddress & 0x1f) / 4;
+
+	// Determine the 16x16 metatile for the 8x8 tile addressed
+	int shift = ((nametableAddress & BIT_6) ? 4 : 0) + ((nametableAddress & BIT_1) ? 2 : 0);
+
+	// Determine the offset into the attribute table
+	int offset = (nametableAddress & 0xc00) + 0x400 - 64 + (row * 8 + col);
+
+	// Determine the attribute table value
+	return (nametable[offset] & (0x3 << shift)) >> shift;
+}
+
 uint16_t PPU::getNametableIndex( uint16_t address )
 {
 	address = (address - 0x2000) % 0x1000;
 	int table = address / 0x400;
 	int offset = address % 0x400;
 	int mode = nes.getROMImage().getHeader()->getMirroring();
-	return (0x2000 + nametableMirrorLookup[mode][table] * 0x400 + offset) % 2048;
+	return (nametableMirrorLookup[mode][table] * 0x400 + offset) % 2048;
 }
 
 uint32_t* PPU::getVisualNametable()
@@ -117,6 +135,7 @@ uint32_t* PPU::getVisualNametable()
 	{
 		// Lookup the pattern table entry
 		uint16_t tile = readByte(index) + 256;
+		uint8_t attribute = getAttributeTableValue(index);
 
 		// Read the pixels of the tile
 		for( int row = 0; row < 8; row++ )
@@ -126,7 +145,14 @@ uint32_t* PPU::getVisualNametable()
 
 			for( int column = 0; column < 8; column++ )
 			{
-				uint32_t pixel = 0xff000000 | ((((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0)) * 0x555555);
+				//uint32_t pixel = 0xff000000 | ((((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0)) * 0x555555);
+				uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
+				uint8_t colorIndex = palette[attribute * 4 + paletteIndex];
+				if( paletteIndex == 0 )
+				{
+					colorIndex = palette[0];
+				}
+				uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
 
 				pixels[(y + row) * 512 + (x + (7 - column))] = pixel;
 			}
@@ -198,7 +224,7 @@ uint32_t* PPU::getVisualPalette()
 
 	for( int index = 0; index < 8; index++ )
 	{
-		pixels[index * 4]     = 0xff000000 | paletteRGB[palette[0]];
+		pixels[index * 4]     = 0xff000000 | paletteRGB[palette[index * 4]];
 		pixels[index * 4 + 1] = 0xff000000 | paletteRGB[palette[index * 4 + 1]];
 		pixels[index * 4 + 2] = 0xff000000 | paletteRGB[palette[index * 4 + 2]];
 		pixels[index * 4 + 3] = 0xff000000 | paletteRGB[palette[index * 4 + 3]];

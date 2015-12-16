@@ -127,6 +127,11 @@ private:
 	//*****************************************************************
 
 	/**
+	 * Get the value of the attribute table for a given tile in a nametable.
+	 */
+	uint8_t getAttributeTableValue( uint16_t nametableAddress );
+
+	/**
 	 * Convert a nametable address to an index of the nametable.
 	 */
 	uint16_t getNametableIndex( uint16_t address );
