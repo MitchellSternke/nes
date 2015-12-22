@@ -4,7 +4,6 @@
 #include <string>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
 
 /**
  * A debug window used to output pixels.

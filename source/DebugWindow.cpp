@@ -13,7 +13,7 @@ DebugWindow::DebugWindow( const std::string& title, int width, int height, int s
 		0
 	);
 
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 	SDL_RenderSetLogicalSize(renderer, width, height);
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 }

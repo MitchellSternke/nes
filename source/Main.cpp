@@ -40,12 +40,6 @@ static int initialize()
 		return -1;
 	}
 
-	// Enable double buffering
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-	// Enable vsync
-	SDL_GL_SetSwapInterval(1);
-
 	return 0;
 }
 

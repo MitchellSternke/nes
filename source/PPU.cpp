@@ -412,6 +412,57 @@ void PPU::renderFrame()
 	}
 
 	// Draw sprites (OAM)
+	for( int i = 0; i < 64; i++ )
+	{
+		// Read OAM for the sprite
+		uint8_t y          = oam[i * 4];
+		uint8_t index      = oam[i * 4 + 1];
+		uint8_t attributes = oam[i * 4 + 2];
+		uint8_t x          = oam[i * 4 + 3];
+
+		// Check if the sprite is visible
+		if( y >= 0xef || x >= 0xf9 )
+		{
+			continue;
+		}
+
+		// Determine the tile to use
+		uint16_t tile = index + (registers.PPUCTRL.spriteTile ? 256 : 0);
+		bool flipX = attributes & BIT_6;
+		bool flipY = attributes & BIT_7;
+
+		// Copy pixels to the framebuffer
+		for( int row = 0; row < 8; row++ )
+		{
+			uint8_t plane1 = nes.getMemory().getMapper().readByte(tile * 16 + row);
+			uint8_t plane2 = nes.getMemory().getMapper().readByte(tile * 16 + row + 8);
+
+			for( int column = 0; column < 8; column++ )
+			{
+				uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
+				uint8_t colorIndex = palette[0x10 + (attributes & 0x03) * 4 + paletteIndex];
+				if( paletteIndex == 0 )
+				{
+					// Skip transparent pixels
+					continue;
+				}
+				uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
+
+				int xOffset = 7 - column;
+				if( flipX )
+				{
+					xOffset = column;
+				}
+				int yOffset = row;
+				if( flipY )
+				{
+					yOffset = 7 - row;
+				}
+
+				buffer[(y + yOffset) * 256 + (x + xOffset)] = pixel;
+			}
+		}
+	}
 }
 
 void PPU::step()
