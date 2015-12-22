@@ -11,7 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters='&quot;Super Mario Bros. (JU) (PRG0) [!].nes&quot;' />
+				<Option parameters='&quot;Donkey Kong (U).nes&quot;' />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
