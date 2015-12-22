@@ -12,11 +12,17 @@ class PPU
 {
 public:
 	PPU(NES& nes);
+	~PPU();
 
 	/**
 	 * Get the current frame number.
 	 */
 	int getFrame() const;
+
+	/**
+	 * Get the rendered frame buffer.
+	 */
+	const uint32_t* getFrameBuffer() const;
 
 	/**
 	 * Get an ARGB representation of the nametable.
@@ -42,6 +48,11 @@ public:
 	 * Step the PPU emulation by one cycle.
 	 */
 	void step();
+
+	/**
+	 * Have the PPU perform a DMA transfer.
+	 */
+	void writeDMA( uint8_t page );
 
 	/**
 	 * Write to a PPU register.
@@ -97,9 +108,6 @@ private:
 			Bit<5> spriteOverflow;
 			Bit<6> spriteZeroHit;
 		} PPUSTATUS;
-
-		// $2003
-		uint8_t OAMADDR;
 	};
 
 	//*****************************************************************
@@ -109,9 +117,12 @@ private:
 	NES& nes;
 	Registers registers;
 
+	uint8_t oamAddress; /**< $2003 (OAMADDR) */
+
 	// Memory
 	uint8_t palette[32];     /**< 32 bytes of palette data. */
 	uint8_t nametable[2048]; /**< 2kb nametable data. */
+	uint8_t oam[256];
 
 	// PPU Address control
 	Word currentAddress; /**< The current address that will be accessed on the next PPU read/write. */
@@ -121,6 +132,9 @@ private:
 	int frame;    /**< The current frame number. */
 	int scanline; /**< The scanline number of the current frame. */
 	int cycle;    /**< The cycle number of the current scanline. */
+
+	// Framebuffer
+	uint32_t* framebuffer[2]; /**< Rendered frames get drawn here. */
 
 	//*****************************************************************
 	// Private Methods
@@ -145,6 +159,11 @@ private:
 	 * Read from the PPUDATA register.
 	 */
 	uint8_t readDataRegister();
+
+	/**
+	 * Render a frame to the framebuffer.
+	 */
+	void renderFrame();
 
 	/**
 	 * Write to PPUADDR register.

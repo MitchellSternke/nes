@@ -91,11 +91,25 @@ PPU::PPU(NES& nes) :
 	//cycle = 340;
 	scanline = 261;
 	cycle = 0;
+
+	framebuffer[0] = new uint32_t[256 * 240];
+	framebuffer[1] = new uint32_t[256 * 240];
+}
+
+PPU::~PPU()
+{
+	delete [] framebuffer[0];
+	delete [] framebuffer[1];
 }
 
 int PPU::getFrame() const
 {
 	return frame;
+}
+
+const uint32_t* PPU::getFrameBuffer() const
+{
+	return framebuffer[(frame + 1) % 2];
 }
 
 uint8_t PPU::getAttributeTableValue( uint16_t nametableAddress )
@@ -134,7 +148,7 @@ uint32_t* PPU::getVisualNametable()
 	for( int index = 0x2000; index < 0x3000; index++ )
 	{
 		// Lookup the pattern table entry
-		uint16_t tile = readByte(index) + 256;
+		uint16_t tile = readByte(index) + (registers.PPUCTRL.backgroundTable ? 256 : 0);
 		uint8_t attribute = getAttributeTableValue(index);
 
 		// Read the pixels of the tile
@@ -145,7 +159,6 @@ uint32_t* PPU::getVisualNametable()
 
 			for( int column = 0; column < 8; column++ )
 			{
-				//uint32_t pixel = 0xff000000 | ((((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0)) * 0x555555);
 				uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
 				uint8_t colorIndex = palette[attribute * 4 + paletteIndex];
 				if( paletteIndex == 0 )
@@ -330,13 +343,12 @@ uint8_t PPU::readRegister( uint16_t address )
 	case 0x2002:
 		writeToggle = false;
 		return (cycle % 2 == 0 ? 0xc0 : 0);
-		break;
 	// OAMADDR
 	case 0x2003:
 		break;
 	// OAMDATA
 	case 0x2004:
-		break;
+		return oam[oamAddress];
 	// PPUSCROLL
 	case 0x2005:
 		break;
@@ -353,6 +365,55 @@ uint8_t PPU::readRegister( uint16_t address )
 	return 0;
 }
 
+void PPU::renderFrame()
+{
+	// This is a quick way to render. It doesn't work with games that have scrolling.
+	uint32_t* buffer = framebuffer[frame % 2];
+
+	// Draw the background (nametable)
+	int x = 0;
+	int y = 0;
+	for( int index = 0x2000; ; index++ )
+	{
+		// Lookup the pattern table entry
+		uint16_t tile = readByte(index) + (registers.PPUCTRL.backgroundTable ? 256 : 0);
+		uint8_t attribute = getAttributeTableValue(index);
+
+		// Read the pixels of the tile
+		for( int row = 0; row < 8; row++ )
+		{
+			uint8_t plane1 = nes.getMemory().getMapper().readByte(tile * 16 + row);
+			uint8_t plane2 = nes.getMemory().getMapper().readByte(tile * 16 + row + 8);
+
+			for( int column = 0; column < 8; column++ )
+			{
+				uint8_t paletteIndex = (((plane1 & (1 << column)) ? 1 : 0) + ((plane2 & (1 << column)) ? 2 : 0));
+				uint8_t colorIndex = palette[attribute * 4 + paletteIndex];
+				if( paletteIndex == 0 )
+				{
+					colorIndex = palette[0];
+				}
+				uint32_t pixel = 0xff000000 | paletteRGB[colorIndex];
+
+				buffer[(y + row) * 256 + (x + (7 - column))] = pixel;
+			}
+		}
+
+		x += 8;
+		if( x >= 256 )
+		{
+			x = 0;
+			y += 8;
+			if( y >= 240 )
+			{
+				break;
+			}
+		}
+	}
+
+	// Draw sprites (OAM)
+}
+
 void PPU::step()
 {
 	// Increment the timing counters
@@ -365,6 +426,7 @@ void PPU::step()
 		{
 			scanline = 0;
 			frame++;
+			renderFrame();
 		}
 	}
 
@@ -434,6 +496,17 @@ void PPU::writeDataRegister( uint8_t value )
 	}
 }
 
+void PPU::writeDMA( uint8_t page )
+{
+	uint16_t address = (uint16_t)page << 8;
+	for( int i = 0; i < 256; i++ )
+	{
+		oam[oamAddress] = nes.getMemory().readByte(address);
+		address++;
+		oamAddress++;
+	}
+}
+
 void PPU::writeRegister( uint16_t address, uint8_t value )
 {
 	switch( address )
@@ -450,9 +523,12 @@ void PPU::writeRegister( uint16_t address, uint8_t value )
 		break;
 	// OAMADDR
 	case 0x2003:
+		oamAddress = value;
 		break;
 	// OAMDATA
 	case 0x2004:
+		oam[oamAddress] = value;
+		oamAddress++;
 		break;
 	// PPUSCROLL
 	case 0x2005:

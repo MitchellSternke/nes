@@ -102,7 +102,14 @@ void Memory::writeByte( uint16_t address, uint8_t value )
 	// APU and I/O registers
 	else if( address < 0x4020 )
 	{
-		///@todo implement
+		switch( address )
+		{
+		case 0x4014:
+			nes.getPPU().writeDMA(value);
+			break;
+		default:
+			break;
+		}
 	}
 	// Cartridge space (mapper)
 	else

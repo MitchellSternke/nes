@@ -12,11 +12,7 @@
 #include "DebugWindow.hpp"
 #include "NES.hpp"
 
-#define WINDOW_RESOLUTION_X (256 * 3)
-#define WINDOW_RESOLUTION_Y (240 * 3)
-
-static uint8_t*    romData = nullptr;
-static SDL_Window* window  = NULL;
+static uint8_t* romData = nullptr;
 
 /**
  * Cleanup all resources used by libraries for program exit.
@@ -44,28 +40,8 @@ static int initialize()
 		return -1;
 	}
 
-	// Create the window
+	// Enable double buffering
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-	window = SDL_CreateWindow(
-		"NES",
-		SDL_WINDOWPOS_CENTERED,
-		SDL_WINDOWPOS_CENTERED,
-		WINDOW_RESOLUTION_X,
-		WINDOW_RESOLUTION_Y,
-		SDL_WINDOW_OPENGL
-	);
-	if( window == NULL )
-	{
-		std::cout << "Error: Failed to create the SDL_Window\nDetails:\n" << SDL_GetError() << std::endl;
-		return -1;
-	}
-
-	// Create the OpenGL context
-	if( SDL_GL_CreateContext(window) == NULL )
-	{
-		std::cout << "Error: failed to create the OpenGL context\nDetails:\n" << SDL_GetError() << std::endl;
-		return -1;
-	}
 
 	// Enable vsync
 	SDL_GL_SetSwapInterval(1);
@@ -104,9 +80,12 @@ static void mainLoop()
 {
 	NES nes(romData);
 
+#if 0
 	DebugWindow patternTableWindow("Pattern Table", 256, 128, 2);
 	DebugWindow nametableWindow("Nametables", 512, 480, 2);
 	DebugWindow paletteWindow("Palette", 4, 8, 32);
+#endif
+	DebugWindow mainWindow("NES", 256, 240, 3);
 
 	bool running = true;
 	while( running )
@@ -139,6 +118,7 @@ static void mainLoop()
 		nes.stepFrame();
 
 		// Render
+#if 0
 		uint32_t* patternTable = nes.getPPU().getVisualPatternTable();
 		patternTableWindow.render(patternTable);
 		delete [] patternTable;
@@ -150,6 +130,8 @@ static void mainLoop()
 		uint32_t* palette = nes.getPPU().getVisualPalette();
 		paletteWindow.render(palette);
 		delete [] palette;
+#endif
+		mainWindow.render(nes.getPPU().getFrameBuffer());
 	}
 }
 

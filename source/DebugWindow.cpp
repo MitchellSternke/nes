@@ -25,7 +25,7 @@ DebugWindow::~DebugWindow()
 	SDL_DestroyWindow(window);
 }
 
-void DebugWindow::render( uint32_t* pixels ) const
+void DebugWindow::render( const uint32_t* pixels ) const
 {
 	SDL_UpdateTexture(texture, NULL, pixels, sizeof(uint32_t) * width);
 

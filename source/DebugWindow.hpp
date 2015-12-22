@@ -15,7 +15,7 @@ public:
 	DebugWindow( const std::string& title, int width, int height, int scale = 1 );
 	~DebugWindow();
 
-	void render( uint32_t* pixels ) const;
+	void render( const uint32_t* pixels ) const;
 
 private:
 	int width;
