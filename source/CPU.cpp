@@ -288,6 +288,9 @@ CPU::CPU( NES& nes ) :
 	opcodes[0x4e] = &CPU::opLSR<MEM_ABSOLUTE>;
 	opcodes[0x5e] = &CPU::opLSR<MEM_INDEXED_X>;
 
+	// NOP
+	opcodes[0xea] = &CPU::opNOP;
+
 	// ORA
 	opcodes[0x09] = &CPU::opORA<MEM_IMMEDIATE>;
 	opcodes[0x05] = &CPU::opORA<MEM_ZERO_PAGE_ABSOLUTE>;
@@ -804,6 +807,11 @@ void CPU::opLSRAccumulator()
 	registers.p.carry = (registers.a & BIT_0);
 	registers.a = (registers.a >> 1) & 0x7f;
 	setZero(registers.a);
+}
+
+void CPU::opNOP()
+{
+	// Do nothing
 }
 
 template <MemoryAddressingMode M>

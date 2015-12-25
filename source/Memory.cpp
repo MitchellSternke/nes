@@ -10,7 +10,8 @@
 
 MemoryAccess::MemoryAccess( Memory& memory, uint16_t address ) :
 	memory(memory),
-	address(address)
+	address(address),
+	valueInitialized(false)
 {
 }
 
@@ -22,12 +23,18 @@ uint16_t MemoryAccess::getAddress() const
 MemoryAccess& MemoryAccess::operator = ( uint8_t value )
 {
 	memory.writeByte(address, value);
+	valueInitialized = false;
 	return *this;
 }
 
 MemoryAccess::operator uint8_t()
 {
-	return memory.readByte(address);
+	if( !valueInitialized )
+	{
+		value = memory.readByte(address);
+		valueInitialized = true;
+	}
+	return value;
 }
 
 //*********************************************************************
@@ -71,7 +78,15 @@ uint8_t Memory::readByte( uint16_t address )
 	// APU and I/O registers
 	else if( address < 0x4020 )
 	{
-		///@todo implement
+		switch( address )
+		{
+		case 0x4016:
+			return nes.getController1().readByte();
+		case 0x4017:
+			return nes.getController2().readByte();
+		default:
+			break;
+		}
 	}
 	// Cartridge space (mapper)
 	else
@@ -106,6 +121,10 @@ void Memory::writeByte( uint16_t address, uint8_t value )
 		{
 		case 0x4014:
 			nes.getPPU().writeDMA(value);
+			break;
+		case 0x4016:
+			nes.getController1().writeByte(value);
+			nes.getController2().writeByte(value);
 			break;
 		default:
 			break;

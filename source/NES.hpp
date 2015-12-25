@@ -1,6 +1,7 @@
 #ifndef NES_HPP
 #define NES_HPP
 
+#include "Controller.hpp"
 #include "CPU.hpp"
 #include "Memory.hpp"
 #include "PPU.hpp"
@@ -14,6 +15,8 @@ class NES
 public:
 	NES( uint8_t* romData );
 
+	Controller& getController1();
+	Controller& getController2();
 	CPU& getCPU();
 	Memory& getMemory();
 	PPU& getPPU();
@@ -29,6 +32,8 @@ private:
 	Memory memory;
 	CPU cpu;
 	PPU ppu;
+	Controller controller1;
+	Controller controller2;
 };
 
 #endif // NES_HPP

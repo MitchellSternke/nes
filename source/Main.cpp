@@ -107,6 +107,15 @@ static void mainLoop()
 				break;
 			}
 		}
+		const Uint8* keys = SDL_GetKeyboardState(NULL);
+		nes.getController1().setButtonState(BUTTON_A, keys[SDL_SCANCODE_X]);
+		nes.getController1().setButtonState(BUTTON_B, keys[SDL_SCANCODE_Z]);
+		nes.getController1().setButtonState(BUTTON_SELECT, keys[SDL_SCANCODE_BACKSPACE]);
+		nes.getController1().setButtonState(BUTTON_START, keys[SDL_SCANCODE_RETURN]);
+		nes.getController1().setButtonState(BUTTON_UP, keys[SDL_SCANCODE_UP]);
+		nes.getController1().setButtonState(BUTTON_DOWN, keys[SDL_SCANCODE_DOWN]);
+		nes.getController1().setButtonState(BUTTON_LEFT, keys[SDL_SCANCODE_LEFT]);
+		nes.getController1().setButtonState(BUTTON_RIGHT, keys[SDL_SCANCODE_RIGHT]);
 
 		// Run a frame of emulation
 		nes.stepFrame();

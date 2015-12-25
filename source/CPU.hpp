@@ -328,6 +328,11 @@ private:
 	void opLSRAccumulator();
 
 	/**
+	 * NOP opcode.
+	 */
+	void opNOP();
+
+	/**
 	 * ORA opcode template.
 	 */
 	template <MemoryAddressingMode M>

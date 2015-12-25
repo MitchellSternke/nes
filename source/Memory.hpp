@@ -42,6 +42,8 @@ public:
 private:
 	Memory& memory;
 	uint16_t address;
+	uint8_t value;
+	bool valueInitialized;
 };
 
 #endif // MEMORY_HPP
