@@ -80,6 +80,8 @@ uint8_t Memory::readByte( uint16_t address )
 	{
 		switch( address )
 		{
+		case 0x4015:
+			return nes.getAPU().readByte(address);
 		case 0x4016:
 			return nes.getController1().readByte();
 		case 0x4017:
@@ -119,6 +121,30 @@ void Memory::writeByte( uint16_t address, uint8_t value )
 	{
 		switch( address )
 		{
+		case 0x4000:
+		case 0x4001:
+		case 0x4002:
+		case 0x4003:
+		case 0x4004:
+		case 0x4005:
+		case 0x4006:
+		case 0x4007:
+		case 0x4008:
+		case 0x4009:
+		case 0x400a:
+		case 0x400b:
+		case 0x400c:
+		case 0x400d:
+		case 0x400e:
+		case 0x400f:
+		case 0x4010:
+		case 0x4011:
+		case 0x4012:
+		case 0x4013:
+		case 0x4015:
+		case 0x4017:
+			nes.getAPU().writeByte(address, value);
+			break;
 		case 0x4014:
 			nes.getPPU().writeDMA(value);
 			break;

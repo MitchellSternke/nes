@@ -11,6 +11,11 @@ NES::NES( uint8_t* romData ) :
 	memory.getMapper().print();
 }
 
+APU& NES::getAPU()
+{
+	return apu;
+}
+
 Controller& NES::getController1()
 {
 	return controller1;

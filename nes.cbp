@@ -39,6 +39,8 @@
 			<Add library="SDL2" />
 			<Add library="opengl32" />
 		</Linker>
+		<Unit filename="source/APU.cpp" />
+		<Unit filename="source/APU.hpp" />
 		<Unit filename="source/CPU.cpp" />
 		<Unit filename="source/CPU.hpp" />
 		<Unit filename="source/Controller.cpp" />
