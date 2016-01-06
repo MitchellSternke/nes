@@ -12,6 +12,7 @@ Only NROM (mapper 0) is supported.
 You'll need the following to build:
 
 - A C++11 compiler
+- Boost
 - SDL2
 
 ## Usage
